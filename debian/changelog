@@ -1,3 +1,9 @@
+libsalome-geom (5.1.5.9-0ubuntu2) natty; urgency=low
+
+  * cleaned up debian/rules 
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Mon, 10 Oct 2011 17:22:48 +0200
+
 libsalome-geom (5.1.5.9-0ubuntu1) natty; urgency=low
 
   * Initial release. 

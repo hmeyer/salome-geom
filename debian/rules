@@ -1,42 +1,15 @@
 #!/usr/bin/make -f
 
-#DH_VERBOSE=1
-#OCC_INCLUDE_PATH=/usr/include/oce
-#
-#clean:
-#	dh_testdir
-#	dh_auto_clean
-#	rm -rf debian/tmp
-##	rm -rf debian/liboce*.[sd]*
-##	rm -rf debian/liboce
-##	rm -rf debian/liboce-dev
-#
-#%:
-#	dh $@
-#
-#.PHONY: clean build 
-
-
-#!/usr/bin/make -f
-
 DH_VERBOSE=1
-#DESTDIR=$(CURDIR)/debian/tmp
-#DEB_SRCDIR=.
-
 CONFIGURE_FLAGS = -DOCC_INCLUDE_PATH=/usr/include/oce
-BUILD_FLAGS = -j8
-
-#DEB_BUILD_OPTIONS = "parallel=8"
-#DH_OPTIONS = "--parallel"
 
 clean:
 	dh_testdir
 	dh_auto_clean
 	rm -rf debian/tmp
-#	rm -rf debian/liboce*.[sd]*
-#	rm -rf debian/liboce
-#	rm -rf debian/liboce-dev
-	echo ####################################################
+	rm -rf debian/libsalome-geom*.[sd]*
+	rm -rf debian/libsalome-geom
+	rm -rf debian/libsalome-geom-dev
 
 
 build: build-stamp
@@ -45,16 +18,11 @@ build-stamp:
 	dh_testdir
 	# Add here commands to compile the package.
 	dh_auto_configure -- $(CONFIGURE_FLAGS)
-	dh_auto_build -- $(BUILD_FLAGS)
+	dh_auto_build
 	touch build-stamp
-	echo ####################################################
 
 %:
-	echo ####################################################
-	echo $@ ################
-	echo ####################################################
 	dh $@
-	echo ####################################################
 
 .PHONY: clean build 
 
