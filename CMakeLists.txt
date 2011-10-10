@@ -170,16 +170,17 @@ ENDIF(MINGW)
 ###########
 
 # Path name install: for instance, GEOM-5.1.2.7
-SET(INSTALL_PATH_NAME GEOM-${GEOM_VERSION_MAJOR}.${GEOM_VERSION_MINOR}.${GEOM_VERSION_PATCH}.${GEOM_VERSION_TWEAK})
+#SET(INSTALL_PATH_NAME GEOM-${GEOM_VERSION_MAJOR}.${GEOM_VERSION_MINOR}.${GEOM_VERSION_PATCH}.${GEOM_VERSION_TWEAK})
+SET(INSTALL_PATH_NAME SALOME-GEOM)
 
 IF(UNIX)
-    # Libraries are installed by default in /usr/local/lib/GEOM-5.1.2.7
+    # Libraries are installed by default in /usr/lib/GEOM-5.1.2.7
     INSTALL(TARGETS Archimede  ExchangeBREP ExchangeCSFDB ExchangeIGES ExchangeSTEP ExchangeSTL
                 ExchangeVRML ExchangeOBJ Exchange3DS GEOMAlgo GEOMImpl GEOM NMTDS NMTTools Partition ShHealOper Sketcher
-                DESTINATION /usr/local/lib/${INSTALL_PATH_NAME})
-    # Headers are installed by default in /usr/local/include/GEOM-5.1.2.7
+                DESTINATION /usr/lib/${INSTALL_PATH_NAME})
+    # Headers are installed by default in /usr/include/GEOM-5.1.2.7
     INSTALL(DIRECTORY inc/
-            DESTINATION /usr/local/include/${INSTALL_PATH_NAME}
+            DESTINATION /usr/include/${INSTALL_PATH_NAME}
             FILES_MATCHING PATTERN "*.h*")
 ENDIF(UNIX)
 ########################

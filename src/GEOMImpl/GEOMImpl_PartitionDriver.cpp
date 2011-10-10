@@ -51,7 +51,7 @@
 #include <TopTools_ListIteratorOfListOfShape.hxx>
 #include <TopTools_DataMapOfShapeShape.hxx>
 
-#include <BRepCheck_Analyzer.HXX>
+#include <BRepCheck_Analyzer.hxx>
 
 #include <ShapeFix_ShapeTolerance.hxx>
 #include <ShapeFix_Shape.hxx>
