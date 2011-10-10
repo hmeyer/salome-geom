@@ -1,6 +1,16 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/cmake.mk
+DH_VERBOSE=1
 
+clean:
+	dh_testdir
+	dh_auto_clean
+	rm -rf debian/tmp
+#	rm -rf debian/liboce*.[sd]*
+#	rm -rf debian/liboce
+#	rm -rf debian/liboce-dev
+
+%:
+	dh $@
+
+.PHONY: clean build 
