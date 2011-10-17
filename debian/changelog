@@ -1,3 +1,9 @@
+libsalome-geom (5.1.5.9-0ubuntu3) oneiric; urgency=low
+
+  * oneiric upload 
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Mon, 17 Oct 2011 23:39:47 +0200
+
 libsalome-geom (5.1.5.9-0ubuntu2) natty; urgency=low
 
   * cleaned up debian/rules 
