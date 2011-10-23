@@ -279,7 +279,6 @@ static
 	}
       }
     }// if (myLimitMode) {
-    //modified by NIZNHY-PKV Thu Feb 15 17:09:34 2007t
     myShape=aC;
   }//if (myLimit!=TopAbs_SHAPE) {
   //

@@ -30,6 +30,9 @@ class PaveFiller from NMTTools
 
 uses   
     DataMapOfIntegerInteger from TColStd,
+    ListOfInteger from TColStd,  
+    MapOfInteger from TColStd,  
+     
     Pnt from gp,
     ShapeEnum  from  TopAbs, 
     Vertex     from  TopoDS, 
@@ -38,7 +41,6 @@ uses
     Edge       from  TopoDS, 
     ListOfShape from TopTools,  
     DataMapOfShapeShape from TopTools,
-    ListOfInteger from TColStd,  
     
     Context     from IntTools, 
     ShrunkRange from IntTools,
@@ -53,23 +55,22 @@ uses
     PaveSet           from BOPTools, 
     Curve             from BOPTools, 
     SSInterference    from BOPTools, 
-    
     IDMapOfPaveBlockIMapOfPaveBlock from BOPTools, 
     IDMapOfPaveBlockIMapOfInteger   from BOPTools, 
     SSIntersectionAttribute         from BOPTools, 
     
-    CommonBlockPool         from NMTTools, 
-    CommonBlock             from NMTTools, 
-    ListOfCommonBlock       from NMTTools, 
-   
     ShapesDataStructure  from NMTDS,  
 
     PShapesDataStructure from NMTDS, 
     Iterator             from NMTDS, 
-    IndexedDataMapOfIndexedMapOfInteger from NMTTools,  
-     
     PIterator from NMTDS, 
-    PInterfPool from NMTDS
+    PInterfPool from NMTDS, 
+     
+    CommonBlockPool         from NMTTools, 
+    CommonBlock             from NMTTools, 
+    ListOfCommonBlock       from NMTTools, 
+    DataMapOfIntegerFaceInfo from NMTTools,
+    IndexedDataMapOfIndexedMapOfInteger from NMTTools  
 
 --raises
 
@@ -400,7 +401,7 @@ is
     	         nF1 :Integer from Standard;  
     	         nF2 :Integer from Standard;  
     	         aLs :out ListOfPaveBlock from BOPTools); 
-    --   
+		  
     PrepareSetForFace(me:out;   
     	    	nF1 :Integer from Standard;  
     	        nF2 :Integer from Standard;  
@@ -412,6 +413,8 @@ is
 		aTol: Real from Standard;  
 		aBC : out Curve from BOPTools); 
 	 
+
+ 
     PutBoundPaveOnCurve (me:out; 
     	    	    aBC :out Curve from BOPTools;	 
      	    	    aFF :out SSInterference from BOPTools); 
@@ -490,12 +493,21 @@ is
     	returns PavePool from BOPTools; 
     ---C++:return &  
 
-    --modified by NIZNHY-PKV Thu Nov 11 08:12:50 2010f 
     CheckCoincidence (me:out; 
     	    	    aPB1 : PaveBlock   from BOPTools; 
     	    	    aPB2 : PaveBlock   from BOPTools) 
     	returns Boolean from Standard;   
-    --modified by NIZNHY-PKV Thu Nov 11 08:12:54 2010t
+	
+--modified by NIZNHY-PKV Wed Feb 09 10:10:48 2011f	 
+    FillFaceInfo (me:out) 
+    	is protected;
+ 
+    CorrectTolR3D(me:out;   
+    	    	aFF     : SSInterference from BOPTools;  
+    	    	aMVStick: MapOfInteger from TColStd; 
+		aTolR3D:  out Real from Standard) 
+    	is protected; 
+--modified by NIZNHY-PKV Wed Feb 09 10:11:52 2011t	
 
 fields 
     myDS               :  PShapesDataStructure from NMTDS   	is protected;   
@@ -516,5 +528,7 @@ fields
     myDSIt             :  PIterator from NMTDS is protected;  
     myCompositeShape   :  Shape from TopoDS is protected;
     myIP               :  PInterfPool from NMTDS is protected;     
-
+--modified by NIZNHY-PKV Wed Feb 09 10:51:50 2011f 
+    myFaceInfo         :  DataMapOfIntegerFaceInfo from NMTTools is protected;
+--modified by NIZNHY-PKV Wed Feb 09 10:51:50 2011t
 end PaveFiller;

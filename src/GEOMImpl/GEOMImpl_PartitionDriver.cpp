@@ -38,6 +38,7 @@
 //#include <BRepBuilderAPI_Copy.hxx>
 #include <BRep_Tool.hxx>
 #include <BRepAlgo.hxx>
+#include <BRepTools.hxx>
 
 #include <TopAbs.hxx>
 #include <TopExp.hxx>
@@ -50,8 +51,6 @@
 #include <TopTools_IndexedMapOfShape.hxx>
 #include <TopTools_ListIteratorOfListOfShape.hxx>
 #include <TopTools_DataMapOfShapeShape.hxx>
-
-#include <BRepCheck_Analyzer.HXX>
 
 #include <ShapeFix_ShapeTolerance.hxx>
 #include <ShapeFix_Shape.hxx>
@@ -388,7 +387,6 @@ Standard_Integer GEOMImpl_PartitionDriver::Execute(TFunction_Logbook& log) const
   aShape = PS.Shape();
   if (aShape.IsNull()) return 0;
   
-  #ifdef NEW_PARTITION_CHECK
   //Alternative case to check not valid partition IPAL21418
   TopoDS_Iterator It (aShape, Standard_True, Standard_True);
   int nbSubshapes=0;
@@ -397,11 +395,8 @@ Standard_Integer GEOMImpl_PartitionDriver::Execute(TFunction_Logbook& log) const
   if (!nbSubshapes)
     Standard_ConstructionError::Raise("Partition aborted : non valid shape result");
   //end of IPAL21418
-  #endif
   
-  // Check shape validity
-  BRepCheck_Analyzer ana (aShape, false);
-  if (!ana.IsValid()) {
+  if (!BRepAlgo::IsValid(aShape)) {
     // 08.07.2008 added by skl during fixing bug 19761 from Mantis
     ShapeFix_ShapeTolerance aSFT;
     aSFT.LimitTolerance(aShape, Precision::Confusion(),
@@ -410,9 +405,7 @@ Standard_Integer GEOMImpl_PartitionDriver::Execute(TFunction_Logbook& log) const
     aSfs->Perform();
 	aShape = aSfs->Shape();
 
-	ana.Init(aShape, false);
-
-	if (!ana.IsValid()) {
+	if (!BRepAlgo::IsValid(aShape)) {
 	  Standard_CString anErrStr("Partition aborted : non valid shape result");
 	  #ifdef THROW_ON_INVALID_SH
 		Standard_ConstructionError::Raise(anErrStr);
@@ -473,6 +466,15 @@ Standard_Integer GEOMImpl_PartitionDriver::Execute(TFunction_Logbook& log) const
       const TopTools_ListOfShape& aModified = aMR.FindFromKey(anEntity);
       Standard_Integer nbModified = aModified.Extent();
 
+      if (nbModified > 0) { // Mantis issue 0021182
+        int ih = 1;
+        TopTools_ListIteratorOfListOfShape itM (aModified);
+        for (; itM.More() && nbModified > 0; itM.Next(), ++ih) {
+          if (!aResIndices.Contains(itM.Value())) {
+            nbModified = 0;
+          }
+        }
+      }
       if (nbModified > 0) {
         TDF_Label aWhatHistoryLabel = anArgumentHistoryLabel.FindChild(ie, Standard_True);
         Handle(TDataStd_IntegerArray) anAttr =

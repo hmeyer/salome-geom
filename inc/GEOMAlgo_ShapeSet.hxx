@@ -22,6 +22,13 @@
 #ifndef _GEOMAlgo_ShapeSet_HeaderFile
 #define _GEOMAlgo_ShapeSet_HeaderFile
 
+#ifndef _Standard_HeaderFile
+#include <Standard.hxx>
+#endif
+#ifndef _Standard_Macro_HeaderFile
+#include <Standard_Macro.hxx>
+#endif
+
 #ifndef _TopTools_MapOfOrientedShape_HeaderFile
 #include <TopTools_MapOfOrientedShape.hxx>
 #endif
@@ -37,13 +44,6 @@
 class TopTools_ListOfShape;
 class TopoDS_Shape;
 
-
-#ifndef _Standard_HeaderFile
-#include <Standard.hxx>
-#endif
-#ifndef _Standard_Macro_HeaderFile
-#include <Standard_Macro.hxx>
-#endif
 
 //! Implementation some formal <br>
 //!          opereations with Set of shapes <br>
@@ -63,8 +63,6 @@ public:
       { 
         if (anAddress) Standard::Free((Standard_Address&)anAddress); 
       }
- // Methods PUBLIC
- // 
 
 //! Empty constructor <br>
 Standard_EXPORT GEOMAlgo_ShapeSet();
@@ -91,6 +89,12 @@ Standard_EXPORT   Standard_Boolean Contains(const GEOMAlgo_ShapeSet& theSet) con
 
 //! Returns the Set <br>
 Standard_EXPORT  const TopTools_ListOfShape& GetSet() const;
+  //! Returns True if the Set==theSet <br>
+  Standard_EXPORT     Standard_Boolean IsEqual(const GEOMAlgo_ShapeSet& theOther) const;
+    Standard_Boolean operator ==(const GEOMAlgo_ShapeSet& theOther) const
+{
+  return IsEqual(theOther);
+}
 
 
 
@@ -98,24 +102,16 @@ Standard_EXPORT  const TopTools_ListOfShape& GetSet() const;
 
 protected:
 
- // Methods PROTECTED
- // 
 
 
- // Fields PROTECTED
- //
 TopTools_MapOfOrientedShape myMap;
 TopTools_ListOfShape myList;
 
 
 private: 
 
- // Methods PRIVATE
- // 
 
 
- // Fields PRIVATE
- //
 
 
 };

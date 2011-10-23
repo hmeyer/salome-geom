@@ -22,6 +22,8 @@
 
 #include "GEOM_Function.hxx"
 
+#include <gp_XYZ.hxx>
+
 #define ROTATE_ANGLE          1
 #define ROTATE_AXIS           2
 #define ROTATE_ORGN           3
@@ -32,6 +34,9 @@
 #define ROTATE_POINT1         8
 #define ROTATE_POINT2         9
 #define ROTATE_ELEVATIONSTEP 10
+#define ROTATE_DIR2_X        11
+#define ROTATE_DIR2_Y        12
+#define ROTATE_DIR2_Z        13
 
 class GEOMImpl_IRotate
 {
@@ -83,6 +88,22 @@ class GEOMImpl_IRotate
   void SetElevationStep(const TCollection_AsciiString& theElevationStep) { _func->SetReal(ROTATE_ELEVATIONSTEP, theElevationStep); }
 
   double GetElevationStep() { return _func->GetReal(ROTATE_ELEVATIONSTEP); }
+  
+  void SetDir2 (gp_XYZ theDir2)
+  {
+    _func->SetReal(ROTATE_DIR2_X, theDir2.X());
+    _func->SetReal(ROTATE_DIR2_Y, theDir2.Y());
+    _func->SetReal(ROTATE_DIR2_Z, theDir2.Z());
+  }
+
+  gp_XYZ GetDir2()
+  {
+    gp_XYZ aRes (0., 0., 0.);
+    aRes.SetX(_func->GetReal(ROTATE_DIR2_X));
+    aRes.SetY(_func->GetReal(ROTATE_DIR2_Y));
+    aRes.SetZ(_func->GetReal(ROTATE_DIR2_Z));
+    return aRes;
+  }
 
  private:
   

@@ -69,6 +69,8 @@
 #include <BOPTools_CArray1OfESInterference.hxx>
 
 #include <NMTDS_ShapesDataStructure.hxx>
+#include <NMTDS_InterfPool.hxx>
+
 #include <NMTTools_PaveFiller.hxx>
 #include <NMTTools_ListOfCoupleOfShape.hxx>
 #include <NMTTools_Tools.hxx>
@@ -83,7 +85,16 @@
 #include <GEOMAlgo_Tools3D.hxx>
 #include <GEOMAlgo_WireEdgeSet.hxx>
 #include <GEOMAlgo_BuilderFace.hxx>
-#include <NMTDS_InterfPool.hxx>
+
+#include <GEOMAlgo_ShapeSet.hxx>
+//
+#include <NMTDS_BoxBndTree.hxx>
+#include <NCollection_UBTreeFiller.hxx>
+#include <Bnd_Box.hxx>
+#include <BRepBndLib.hxx>
+#include <TopTools_DataMapOfIntegerShape.hxx>
+#include <TColStd_ListOfInteger.hxx>
+#include <TColStd_ListIteratorOfListOfInteger.hxx>
 
 static
   void UpdateCandidates(const Standard_Integer ,
@@ -253,6 +264,7 @@ static
 	aNbSE=aLSE.Extent();
 	if (aNbSE) {
 	  aMFP.Add(i);
+          break;
 	}
       }
     }
@@ -357,13 +369,20 @@ static
     }
     //
     // 2.2. Build images Faces
+    TopTools_ListOfShape aLFR;
+    GEOMAlgo_ShapeSet aS1, aS2;
+    //
+    const TopTools_ListOfShape& aSE=aWES.StartElements();
+    aS1.Add(aSE);
+    aS2.Add(aFF, TopAbs_EDGE);
+    if (aS1.IsEqual(aS2)) {
+      aLFR.Append(aF);
+    }
+    else {
     GEOMAlgo_BuilderFace aBF;
     //
     aBF.SetFace(aFF);
     aBF.SetContext(aCtx);
-    const TopTools_ListOfShape& aSE=aWES.StartElements();
-    //
-    //DEB f
     /*
     {
       TopoDS_Compound aCx;
@@ -380,16 +399,11 @@ static
       int a=0;
     }
     */
-    //DEB t
-    //
     aBF.SetShapes(aSE);
-    //
+      // <-DEB
     aBF.Perform();
     //
     const TopTools_ListOfShape& aLF=aBF.Areas();
-    //
-    TopTools_ListOfShape aLFR;
-    //
     aIt.Initialize(aLF);
     for (; aIt.More(); aIt.Next()) {
       TopoDS_Shape& aFR=aIt.Value();
@@ -397,6 +411,7 @@ static
 	aFR.Orientation(TopAbs_REVERSED);
       }
       aLFR.Append(aFR);
+    }
     }
     //
     // 2.3. Collect draft images Faces
@@ -409,17 +424,20 @@ static
 //=======================================================================
   void GEOMAlgo_Builder::FillSameDomainFaces()
 {
+  Standard_Boolean bIsSDF, bHasImage1, bHasImage2, bForward;
+  Standard_Integer i, j, aNbFF, nF1, nF2, aNbPBInOn, aNbC, aNbSE;
+  Standard_Integer aNbF1, aNbF2, i2s, aNbSD;
+  TopTools_MapOfShape aMFence;
+  TopTools_ListOfShape aLX1, aLX2;
+  TopTools_ListIteratorOfListOfShape aItF1, aItF2;
+  NMTTools_ListOfCoupleOfShape aLCS;
+  //
   const NMTDS_ShapesDataStructure& aDS=*myPaveFiller->DS();
   NMTTools_PaveFiller* pPF=myPaveFiller;
   NMTDS_InterfPool* pIP=pPF->IP();
   BOPTools_CArray1OfSSInterference& aFFs=pIP->SSInterferences();
   IntTools_Context& aCtx= pPF->ChangeContext();
   //
-  Standard_Boolean bIsSDF;
-  Standard_Integer i, j, aNbFF, nF1, nF2, aNbPBInOn, aNbC, aNbSE;
-  TopTools_MapOfShape aMFence;
-  TopTools_ListIteratorOfListOfShape aItF1, aItF2;
-  NMTTools_ListOfCoupleOfShape aLCS;   
   //
   //mySameDomainShapes.Clear();
   //
@@ -457,20 +475,78 @@ static
     // the faces are suspected to be SDF.
     // Try to find SDF among images of nF1, nF2
     aMFence.Clear();
-    const TopTools_ListOfShape& aLF1=mySplitFaces.Image(aF1);
-    const TopTools_ListOfShape& aLF2=mySplitFaces.Image(aF2);
     //
-    aItF1.Initialize(aLF1);
-    for (; aItF1.More(); aItF1.Next()) {
-      const TopoDS_Face& aF1x=TopoDS::Face(aItF1.Value());
+    //--------------------------------------------------------
+    bHasImage1=mySplitFaces.HasImage(aF1);
+    bHasImage2=mySplitFaces.HasImage(aF2);
+    //
+    aLX1.Clear();
+    if (!bHasImage1) {
+      aLX1.Append(aF1);
+    }
+    //
+    aLX2.Clear();
+    if (!bHasImage2) {
+      aLX2.Append(aF2);
+    }
+    //
+    const TopTools_ListOfShape& aLF1r=(bHasImage1)? mySplitFaces.Image(aF1) : aLX1;
+    const TopTools_ListOfShape& aLF2r=(bHasImage2)? mySplitFaces.Image(aF2) : aLX2;
+    //
+    TopTools_DataMapOfIntegerShape aMIS;
+    TColStd_ListIteratorOfListOfInteger aItLI;
+    NMTDS_BoxBndTreeSelector aSelector;
+    NMTDS_BoxBndTree aBBTree;
+    NCollection_UBTreeFiller <Standard_Integer, Bnd_Box> aTreeFiller(aBBTree);
+    //
+    aNbF1=aLF1r.Extent();
+    aNbF2=aLF2r.Extent();
+    bForward=(aNbF1<aNbF2);
+    //
+    const TopTools_ListOfShape& aLF1=bForward ? aLF1r : aLF2r;
+    const TopTools_ListOfShape& aLF2=bForward ? aLF2r : aLF1r;
+    //
+    // 1. aTreeFiller
+    aItF2.Initialize(aLF2);
+    for (i2s=1; aItF2.More(); aItF2.Next(), ++i2s) {
+      Bnd_Box aBoxF2s;
       //
-      aItF2.Initialize(aLF2);
-      for (; aItF2.More(); aItF2.Next()) {
-	const TopoDS_Face& aF2y=TopoDS::Face(aItF2.Value());
+      const TopoDS_Face& aF2s=*((TopoDS_Face*)(&aItF2.Value()));
+      //
+      BRepBndLib::Add(aF2s, aBoxF2s);
+      //
+      aMIS.Bind(i2s, aF2s);
+      //
+      aTreeFiller.Add(i2s, aBoxF2s);
+    }//for (i2s=1; aItF2.More(); aItF2.Next(), ++i2s) {
+    //
+    aTreeFiller.Fill();
+    //
+    // 2.
+    aItF1.Initialize(aLF1);
+    for (j=1; aItF1.More(); aItF1.Next(), ++j) {
+      Bnd_Box aBoxF1x;
+      //
+      const TopoDS_Face& aF1x=*((TopoDS_Face*)(&aItF1.Value()));
+      //
+      BRepBndLib::Add(aF1x, aBoxF1x);
+      //
+      aSelector.Clear();
+      aSelector.SetBox(aBoxF1x);
+      aNbSD=aBBTree.Select(aSelector);
+      if (!aNbSD) {
+        continue;
+      }
+      //
+      const TColStd_ListOfInteger& aLI=aSelector.Indices();
+      aItLI.Initialize(aLI);
+      for (; aItLI.More(); aItLI.Next()) {
+        i2s=aItLI.Value();
+        const TopoDS_Face& aF2y=*((TopoDS_Face*)(&aMIS.Find(i2s)));
+      //
 	bIsSDF=NMTTools_Tools::AreFacesSameDomain(aF1x, aF2y, aCtx);
 	if (bIsSDF) {
-	  if (aMFence.Contains(aF1x) ||
-	      aMFence.Contains(aF2y)) {
+          if (aMFence.Contains(aF1x) || aMFence.Contains(aF2y)) {
 	    continue;
 	  }
 	  aMFence.Add(aF1x);
@@ -482,6 +558,7 @@ static
 	  aCS.SetShape2(aF2y);
 	  aLCS.Append(aCS);
 	  //
+          if (bForward) {
 	  if (aF1x==aF1) {
 	    if (!mySplitFaces.HasImage(aF1)) {
 	      mySplitFaces.Bind(aF1, aF1);
@@ -492,11 +569,24 @@ static
 	      mySplitFaces.Bind(aF2, aF2);
 	    }
 	  }
-	  //
-	  
+          }
+          else {
+            if (aF1x==aF2) {
+              if (!mySplitFaces.HasImage(aF2)) {
+                mySplitFaces.Bind(aF2, aF2);
+              }
+            }
+            if (aF2y==aF1) {
+              if (!mySplitFaces.HasImage(aF1)) {
+                mySplitFaces.Bind(aF1, aF1);
 	}
       }
     }
+          //
+          break;
+        }//if (bIsSDF) {
+      }//for (; aItLI.More(); aItLI.Next()) {
+    }//for (; aItF1.More(); aItF1.Next()) {
   }//for (i=1; i<=aNbFF; ++i)
   //
   aNbC=aLCS.Extent();
@@ -529,7 +619,7 @@ static
 //=======================================================================
   void GEOMAlgo_Builder::FillImagesFaces1()
 {
-  Standard_Integer i, aNb, iSense;
+  Standard_Integer i, aNb, iSense, aNbLFx;
   TopoDS_Face aF, aFSp, aFSD;
   TopTools_ListOfShape aLFx;
   TopTools_ListIteratorOfListOfShape aIt;
@@ -547,19 +637,19 @@ static
       continue;
     }
     //
-    aF=TopoDS::Face(aS);
+    aF=*((TopoDS_Face*)&aS);
     //
     aLFx.Clear();
     const TopTools_ListOfShape& aLF=mySplitFaces.Image(aF);
     aIt.Initialize(aLF);
     for (; aIt.More(); aIt.Next()) {
-      aFSp=TopoDS::Face(aIt.Value());
+      aFSp=*((TopoDS_Face*)(&aIt.Value()));
       if (!mySameDomainShapes.Contains(aFSp)) {
 	aLFx.Append(aFSp);
       }
       else {
 	const TopoDS_Shape& aSx=mySameDomainShapes.FindFromKey(aFSp);
-	aFSD=TopoDS::Face(aSx);
+        aFSD=*((TopoDS_Face*)(&aSx));
 	iSense=GEOMAlgo_Tools3D::Sense(aFSp, aFSD);
 	if (iSense<0) {
 	  aFSD.Reverse();
@@ -567,7 +657,15 @@ static
 	aLFx.Append(aFSD);
       }
     }
-    if (!myImages.HasImage(aF)) {//XX
+    //
+    if (!myImages.HasImage(aF)) {
+      aNbLFx=aLFx.Extent();
+      if (aNbLFx==1) {
+        const TopoDS_Shape& aFx=aLFx.First();
+        if (aF.IsSame(aFx)) {
+          continue;
+        }
+      }
       myImages.Bind(aF, aLFx);
     }
   }
@@ -583,7 +681,7 @@ static
   NMTDS_InterfPool* pIP=pPF->IP();
   IntTools_Context& aCtx= pPF->ChangeContext();
   //
-  BOPTools_CArray1OfSSInterference& aFFs=pIP->SSInterferences();
+  /*BOPTools_CArray1OfSSInterference& aFFs=*/pIP->SSInterferences();
   BOPTools_CArray1OfVSInterference& aVFs=pIP->VSInterferences();
   BOPTools_CArray1OfESInterference& aEFs=pIP->ESInterferences();
   const NMTTools_IndexedDataMapOfIndexedMapOfInteger& aMAV=pPF->AloneVertices();

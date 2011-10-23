@@ -28,6 +28,9 @@
 
 #include <BRep_Tool.hxx>
 #include <BRepBuilderAPI_Transform.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
+#include <BRepClass_FaceClassifier.hxx>
+#include <BRepTools.hxx>
 
 #include <TopAbs.hxx>
 #include <TopExp.hxx>
@@ -116,8 +119,8 @@ Standard_Integer GEOMImpl_MirrorDriver::Execute(TFunction_Logbook& log) const
     const gp_Dir dir = pos.Direction(); /* Main direction of the plane (Z axis) */
     gp_Ax2 aPln (loc, dir);
     aTrsf.SetMirror(aPln);
-
-  } else if (aType == MIRROR_AXIS || aType == MIRROR_AXIS_COPY) {
+  }
+  else if (aType == MIRROR_AXIS || aType == MIRROR_AXIS_COPY) {
     Handle(GEOM_Function) anAxis = TI.GetAxis();
     if (anAxis.IsNull()) return 0;
     TopoDS_Shape anAxisShape = anAxis->GetValue();
@@ -129,8 +132,8 @@ Standard_Integer GEOMImpl_MirrorDriver::Execute(TFunction_Logbook& log) const
     gp_Vec aV (aP1, aP2);
     gp_Ax1 anAx1 (aP1, aV);
     aTrsf.SetMirror(anAx1);
-
-  } else if (aType == MIRROR_POINT || aType == MIRROR_POINT_COPY) {
+  }
+  else if (aType == MIRROR_POINT || aType == MIRROR_POINT_COPY) {
     Handle(GEOM_Function) aPoint = TI.GetPoint();
     if (aPoint.IsNull()) return 0;
     TopoDS_Shape aVertexShape = aPoint->GetValue();
@@ -139,7 +142,8 @@ Standard_Integer GEOMImpl_MirrorDriver::Execute(TFunction_Logbook& log) const
 
     gp_Pnt aP = BRep_Tool::Pnt(aVertex);
     aTrsf.SetMirror(aP);
-  } else {
+  }
+  else {
     return 0;
   }
 

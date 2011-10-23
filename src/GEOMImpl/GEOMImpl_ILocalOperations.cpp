@@ -811,8 +811,9 @@ Handle(GEOM_Object) GEOMImpl_ILocalOperations::MakeFillet1D
     << ", " << theR << ", [";
 
   it = theVertexes.begin();
+  if (it != theVertexes.end()) {
   pd << (*it++);
-  while (it != theVertexes.end()) {
+    while (it != theVertexes.end())
     pd << ", " << (*it++);
   }
   pd << "])";

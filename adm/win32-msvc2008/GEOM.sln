@@ -51,6 +51,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShHealOper", "ShHealOper.vc
 		{234D21B0-F128-4477-899C-BD8F29083FDE} = {234D21B0-F128-4477-899C-BD8F29083FDE}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExchangeOBJ", "ExchangeOBJ.vcproj", "{0ADE1DA3-DFC6-4109-9AB6-3AF782DA4268}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Exchange3DS", "Exchange3DS.vcproj", "{781F77BE-7CB9-4077-9980-F741FED1CA30}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -117,6 +121,14 @@ Global
 		{5187D43D-6BC4-42E0-8E37-0DEEE55BBFE4}.Debug|Win32.Build.0 = Debug|Win32
 		{5187D43D-6BC4-42E0-8E37-0DEEE55BBFE4}.Release|Win32.ActiveCfg = Release|Win32
 		{5187D43D-6BC4-42E0-8E37-0DEEE55BBFE4}.Release|Win32.Build.0 = Release|Win32
+		{0ADE1DA3-DFC6-4109-9AB6-3AF782DA4268}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0ADE1DA3-DFC6-4109-9AB6-3AF782DA4268}.Debug|Win32.Build.0 = Debug|Win32
+		{0ADE1DA3-DFC6-4109-9AB6-3AF782DA4268}.Release|Win32.ActiveCfg = Release|Win32
+		{0ADE1DA3-DFC6-4109-9AB6-3AF782DA4268}.Release|Win32.Build.0 = Release|Win32
+		{781F77BE-7CB9-4077-9980-F741FED1CA30}.Debug|Win32.ActiveCfg = Debug|Win32
+		{781F77BE-7CB9-4077-9980-F741FED1CA30}.Debug|Win32.Build.0 = Debug|Win32
+		{781F77BE-7CB9-4077-9980-F741FED1CA30}.Release|Win32.ActiveCfg = Release|Win32
+		{781F77BE-7CB9-4077-9980-F741FED1CA30}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

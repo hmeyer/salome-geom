@@ -1,10 +1,10 @@
 # SGEOM cmake build file
 PROJECT(GEOM)
 
-SET(GEOM_VERSION_MAJOR 5)
-SET(GEOM_VERSION_MINOR 1)
-SET(GEOM_VERSION_PATCH 5)
-SET(GEOM_VERSION_TWEAK 9)
+SET(GEOM_VERSION_MAJOR 6)
+SET(GEOM_VERSION_MINOR 3)
+SET(GEOM_VERSION_PATCH 1)
+SET(GEOM_VERSION_TWEAK 8)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
@@ -14,30 +14,34 @@ SET(LIBRARY_OUTPUT_PATH cmake-build)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(inc)
 
-########################################
-# OpenCASCADE include and lib location #
-########################################
-# Find OpenCASCADE library, set include and lib path
-IF(WIN32)
-    # Under Windows, check the CASROOT env variable
-    FIND_PATH(OCC_INCLUDE_PATH Standard_Real.hxx 
-              $ENV{CASROOT}\\inc)
-    SET(OCC_LIB_PATH "$ENV{CASROOT}\\win32\\lib")
+#################################################################
+# Look for OCE or official OpenCASCADE include and lib location #
+#################################################################
+FIND_PACKAGE(OCE)
+IF(OCE_FOUND)
+	INCLUDE_DIRECTORIES(${OCE_INCLUDE_DIRS})
+	MESSAGE("-- OCE include directory: ${OCC_INCLUDE_DIRS}")
+ELSE(OCE_FOUND)
+	# Find OpenCASCADE library, set include and lib path
+	IF(WIN32)
+    	# Under Windows, check the CASROOT env variable
+    	FIND_PATH(OCC_INCLUDE_PATH Standard_Real.hxx 
+              	$ENV{CASROOT}\\inc)
+    			SET(OCC_LIB_PATH "$ENV{CASROOT}\\win32\\lib")
     # Find the Standard_Real.hxx header in this path
-ELSE(WIN32) #Unix
-    FIND_PATH(OCC_INCLUDE_PATH Standard_Real.hxx $ENV{CASROOT}/inc)
-    SET(OCC_LIB_PATH "$ENV{CASROOT}/lib")
-    #FIND_LIBRARY(OCC_LIB_PATH TKernel PATHS $ENV{CASROOT}/lib)
-    MESSAGE(${OCC_LIB_PATH})
-ENDIF(WIN32)
+	ELSE(WIN32) #Unix
+    	FIND_PATH(OCC_INCLUDE_PATH Standard_Real.hxx $ENV{CASROOT}/inc $ENV{CASROOT}/include/oce)
+    	SET(OCC_LIB_PATH "$ENV{CASROOT}/lib")
+    	MESSAGE(${OCC_LIB_PATH})
+	ENDIF(WIN32)
+	# Tells CMake where are the required headers
+	INCLUDE_DIRECTORIES(${OCC_INCLUDE_PATH})
+	LINK_DIRECTORIES(${OCC_LIB_PATH})
+	MESSAGE("-- OpenCASCADE include directory: ${OCC_INCLUDE_PATH}")
+	MESSAGE("-- OpenCASCADE shared libraries directory: ${OCC_LIB_PATH}")
+ENDIF(OCE_FOUND)
 
 # Check that these paths are ok
-MESSAGE("-- OpenCASCADE include directory: ${OCC_INCLUDE_PATH}")
-MESSAGE("-- OpenCASCADE shared libraries directory: ${OCC_LIB_PATH}")
-
-# Tells CMake where are the required headers
-INCLUDE_DIRECTORIES(${OCC_INCLUDE_PATH})
-LINK_DIRECTORIES(${OCC_LIB_PATH})
 
 
 ############################
@@ -169,18 +173,17 @@ ENDIF(MINGW)
 # INSTALL #
 ###########
 
-# Path name install: for instance, GEOM-5.1.2.7
-SET(INSTALL_PATH_NAME GEOM-${GEOM_VERSION_MAJOR}.${GEOM_VERSION_MINOR}.${GEOM_VERSION_PATCH}.${GEOM_VERSION_TWEAK})
-
 IF(UNIX)
-    # Libraries are installed by default in /usr/local/lib/GEOM-5.1.2.7
+    # Libraries are installed by default in /usr/local/lib/
     INSTALL(TARGETS Archimede  ExchangeBREP ExchangeCSFDB ExchangeIGES ExchangeSTEP ExchangeSTL
                 ExchangeVRML ExchangeOBJ Exchange3DS GEOMAlgo GEOMImpl GEOM NMTDS NMTTools Partition ShHealOper Sketcher
-                DESTINATION /usr/local/lib/${INSTALL_PATH_NAME})
-    # Headers are installed by default in /usr/local/include/GEOM-5.1.2.7
+                DESTINATION /usr/local/lib)
+    # Headers are installed by default in /usr/local/include/geom
     INSTALL(DIRECTORY inc/
-            DESTINATION /usr/local/include/${INSTALL_PATH_NAME}
-            FILES_MATCHING PATTERN "*.h*")
+            DESTINATION /usr/local/include/geom
+            FILES_MATCHING PATTERN "*.h*"
+			PATTERN "*.svn*" EXCLUDE
+			)
 ENDIF(UNIX)
 ########################
 # Packaging with CPack #

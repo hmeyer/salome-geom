@@ -46,6 +46,19 @@
 #include <map>
 #include <list>
 #include <vector>
+#include <string>
+
+/*!
+ * \brief Data of GEOM_Object
+ */
+struct TObjectData
+{
+  TCollection_AsciiString _entry;
+  TCollection_AsciiString _studyEntry;
+  TCollection_AsciiString _name;
+  TCollection_AsciiString _pyName;
+  bool                    _unpublished;
+};
 
 class Handle_TDataStd_HArray1OfByte;
 
@@ -139,11 +152,12 @@ class GEOM_Engine
                     bool isStandaloneOperation = false);
 
   //!Returns Python script of document
-  Standard_EXPORT TCollection_AsciiString DumpPython(int theDocID,
-                        Resource_DataMapOfAsciiStringAsciiString& theObjectNames,
-                        TVariablesList theVariables,
-                        bool isPublished,
-                        bool& aValidScript);
+  Standard_EXPORT TCollection_AsciiString DumpPython(int theDocID, 
+                                                     std::vector<TObjectData>& theObjectData,
+                                                     TVariablesList theVariables,
+                                                     bool isPublished, 
+                                                     bool isMultiFile, 
+                                                     bool& aValidScript);
 
   //!Returns dump name
   Standard_EXPORT const char* GetDumpName (const char* theStudyEntry) const;

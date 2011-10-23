@@ -36,7 +36,7 @@
 
 #include <ShHealOper_Sewing.hxx>
 #include <ShHealOper_ShapeProcess.hxx>
-#include <GEOMAlgo_Gluer.hxx>
+//#include <GEOMAlgo_Gluer.hxx>
 #include <BlockFix_BlockFixAPI.hxx>
 
 #include "utilities.h"
@@ -444,8 +444,8 @@ Standard_Integer GEOMImpl_BlockDriver::Execute(TFunction_Logbook& log) const
           Glue.Add(anArgs(ind));
         }
 
-      } else {
-
+      }
+      else {
         // Make block (hexahedral solid) from two opposite faces
         if (anArgs(1).ShapeType() != TopAbs_FACE ||
             anArgs(2).ShapeType() != TopAbs_FACE) {
@@ -529,9 +529,8 @@ Standard_Integer GEOMImpl_BlockDriver::Execute(TFunction_Logbook& log) const
       }
       aShape = Sol;
       BRepLib::SameParameter(aShape, 1.E-5, Standard_True);
-
-    } else if (aType == BLOCK_COMPOUND_GLUE) {
-
+    }
+    else if (aType == BLOCK_COMPOUND_GLUE) {
       // Make blocks compound from a compound
       if (anArgs(1).ShapeType() != TopAbs_COMPOUND &&
           anArgs(2).ShapeType() != TopAbs_COMPSOLID) {
@@ -540,23 +539,15 @@ Standard_Integer GEOMImpl_BlockDriver::Execute(TFunction_Logbook& log) const
 
       TopoDS_Shape aCompound = anArgs(1);
 
-      // Glue coincident faces and edges (with Partition algorithm).
-      //NMTAlgo_Splitter1 PS;
-      //PS.AddShape(aCompound);
-      //PS.Compute();
-      //PS.SetRemoveWebs(Standard_False);
-      //      PS.Build(aCompound.ShapeType());
-      //PS.Build(TopAbs_SOLID);
-      //aShape = PS.Shape();
-
-      GEOMAlgo_Gluer aGluer;
-      aGluer.SetShape(aCompound);
-      aGluer.SetCheckGeometry(Standard_True);
-      aGluer.Perform();
-      aShape = aGluer.Result();
-
-
-    } else {
+      // Glue coincident faces and edges
+      aShape = GEOMImpl_GlueDriver::GlueFaces(aCompound, Precision::Confusion(), Standard_True);
+      //GEOMAlgo_Gluer aGluer;
+      //aGluer.SetShape(aCompound);
+      //aGluer.SetCheckGeometry(Standard_True);
+      //aGluer.Perform();
+      //aShape = aGluer.Result();
+    }
+    else {
     }
 
   } else { // Multi-transformations and compound improving
@@ -1081,7 +1072,8 @@ Standard_EXPORT Handle_Standard_Type& GEOMImpl_BlockDriver_Type_()
 //function : DownCast
 //purpose  :
 //=======================================================================
-const Handle(GEOMImpl_BlockDriver) Handle(GEOMImpl_BlockDriver)::DownCast(const Handle(Standard_Transient)& AnObject)
+const Handle(GEOMImpl_BlockDriver) Handle(GEOMImpl_BlockDriver)::DownCast
+  (const Handle(Standard_Transient)& AnObject)
 {
   Handle(GEOMImpl_BlockDriver) _anOtherObject;
 

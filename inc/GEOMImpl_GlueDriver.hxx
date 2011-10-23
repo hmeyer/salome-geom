@@ -152,16 +152,28 @@ Standard_EXPORT ~GEOMImpl_GlueDriver() {};
 Standard_EXPORT static TopoDS_Shape GlueFaces (const TopoDS_Shape& theShape,
 											   const Standard_Real theTolerance,
 											   const Standard_Boolean doKeepNonSolids = Standard_True);
-
+  /*
 Standard_EXPORT TopoDS_Shape GlueFacesWithWarnings (const TopoDS_Shape& theShape,
 													const Standard_Real theTolerance,
-													Standard_Boolean doKeepNonSolids,
+                                                    const Standard_Boolean doKeepNonSolids,
                                                     TCollection_AsciiString& theWarning) const;
 
 Standard_EXPORT static TopoDS_Shape GlueFacesByList (const TopoDS_Shape& theShape,
 							 const Standard_Real theTolerance,
-							 Standard_Boolean doKeepNonSolids,
+                                                     const Standard_Boolean doKeepNonSolids,
 						     const TopTools_MapOfShape& aFaces);
+  */
+Standard_EXPORT TopoDS_Shape GlueWithWarnings (const TopoDS_Shape& theShape,
+                                               const Standard_Real theTolerance,
+                                               const TopAbs_ShapeEnum theShapeType,
+                                               const Standard_Boolean doKeepNonSolids,
+                                               TCollection_AsciiString& theWarning) const;
+
+Standard_EXPORT static TopoDS_Shape GlueByList (const TopoDS_Shape& theShape,
+                                                const Standard_Real theTolerance,
+                                                const Standard_Boolean doKeepNonSolids,
+                                                const TopTools_MapOfShape& theShapesList,
+                                                const Standard_Boolean doGlueAllEdges);
 
 
  // Type management

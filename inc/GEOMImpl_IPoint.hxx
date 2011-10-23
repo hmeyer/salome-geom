@@ -37,6 +37,8 @@
 #define ARG_SURFACE 9
 #define ARG_PARAM2 10
 
+#define ARG_LENGTH 11
+
 class GEOMImpl_IPoint
 {
  public:
@@ -80,6 +82,11 @@ class GEOMImpl_IPoint
   void SetParameter2(const TCollection_AsciiString& theParam) { _func->SetReal(ARG_PARAM2, theParam); }
 
   double GetParameter2() { return _func->GetReal(ARG_PARAM2); }
+
+  void SetLength(double theLength) { _func->SetReal(ARG_LENGTH, theLength); }
+  void SetLength(const TCollection_AsciiString& theLength) { _func->SetReal(ARG_LENGTH, theLength); }
+
+  double GetLength() { return _func->GetReal(ARG_LENGTH); }
   
  private:
 

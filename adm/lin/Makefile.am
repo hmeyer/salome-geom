@@ -13,10 +13,10 @@ dist_resource_DATA = $(srcdir)/resources/GUID.txt $(srcdir)/resources/ImportExpo
 #AM_CPPFLAGS = -fpermissive -ffriend-injection -I$(CASROOT)/inc -I$(srcdir)/$(geomdir)inc/ -I$(srcdir)/$(geomdir)src/GEOMAlgo -I$(srcdir)/$(geomdir)src/BlockFix -I$(srcdir)/$(geomdir)src/GEOM -I$(srcdir)/$(geomdir)src/NMTTools -I$(srcdir)/$(geomdir)src/NMTDS
 
 # set compiler flags and include directories, -fpermissive and -ffriend-injection not needed for occ6.3
-AM_CPPFLAGS = -I$(CASROOT)/inc -I$(srcdir)/$(geomdir)inc/ -I$(srcdir)/$(geomdir)src/GEOMAlgo -I$(srcdir)/$(geomdir)src/BlockFix -I$(srcdir)/$(geomdir)src/GEOM -I$(srcdir)/$(geomdir)src/NMTTools -I$(srcdir)/$(geomdir)src/NMTDS
+AM_CPPFLAGS = -I$(CASROOT)/inc -I$(srcdir)/$(geomdir)inc/ -I$(srcdir)/$(geomdir)src/GEOMAlgo -I$(srcdir)/$(geomdir)src/BlockFix -I$(srcdir)/$(geomdir)src/GEOM -I$(srcdir)/$(geomdir)src/NMTTools -I$(srcdir)/$(geomdir)src/NMTDS -I$(srcdir)/$(geomdir)src/Exchange3DS
 
 # set library names
-lib_LTLIBRARIES = libExchangeCSFDB.la libArchimede.la libNMTDS.la libNMTTools.la libGEOMAlgo.la libGEOMImpl.la libGEOM.la libExchangeBREP.la libExchangeIGES.la libExchangeSTEP.la libExchangeSTL.la libExchangeVRML.la libPartition.la libShHealOper.la libSketcher.la
+lib_LTLIBRARIES = libExchangeCSFDB.la libArchimede.la libNMTDS.la libNMTTools.la libGEOMAlgo.la libGEOMImpl.la libGEOM.la libExchangeBREP.la libExchangeIGES.la libExchangeSTEP.la libExchangeSTL.la libExchangeOBJ.la libExchange3DS.la libExchangeVRML.la libPartition.la libShHealOper.la libSketcher.la
 
 # set global linker flags
 AM_LDFLAGS = -version-info 1:0:0
@@ -84,7 +84,6 @@ $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn2.cpp \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn.cpp \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOnQuad.cpp \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_GlueAnalyser.cpp \
-$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer1.cpp \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer.cpp \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_HAlgo.cpp \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_IndexedDataMapNodeOfIndexedDataMapOfIntegerShape_0.cpp \
@@ -143,7 +142,6 @@ $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn1.ixx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn2.ixx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn.ixx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_GlueAnalyser.ixx \
-$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer1.ixx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer.ixx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_HAlgo.ixx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_PassKey.ixx \
@@ -183,7 +181,6 @@ $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn1.jxx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn2.jxx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn.jxx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_GlueAnalyser.jxx \
-$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer1.jxx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer.jxx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_HAlgo.jxx \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_PassKey.jxx \
@@ -224,7 +221,6 @@ $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn1.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn2.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_FinderShapeOn.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_GlueAnalyser.cdl \
-$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer1.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_HAlgo.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_PassKey.cdl \
@@ -248,6 +244,20 @@ $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WESCorrector.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WireEdgeSet.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WireSolid.cdl \
 $(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WireSplitter.cdl \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_DataMapIteratorOfDataMapOfOrientedShapeShape_0.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_DataMapNodeOfDataMapOfOrientedShapeShape_0.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_DataMapOfOrientedShapeShape_0.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Tools_1.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WESScaler.cdl \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WESScaler.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WESScaler.ixx \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_WESScaler.jxx \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_GlueDetector.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer2.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer2_1.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer2_2.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_Gluer2_3.cpp \
+$(srcdir)/$(geomdir)src/GEOMAlgo/GEOMAlgo_GluerAlgo.cpp \
 $(srcdir)/$(geomdir)src/BlockFix/BlockFix_BlockFixAPI.cpp \
 $(srcdir)/$(geomdir)src/BlockFix/BlockFix_CheckTool.cpp \
 $(srcdir)/$(geomdir)src/BlockFix/BlockFix.cpp \
@@ -298,6 +308,8 @@ $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_DraftDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_EllipseDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_ExportDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_FaceDriver.cpp \
+$(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_Fillet1d.cpp \
+$(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_Fillet1dDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_FilletDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_FillingDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_Gen.cpp \
@@ -341,7 +353,10 @@ $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_ThruSectionsDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_TorusDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_TranslateDriver.cpp \
 $(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_VariableFilletDriver.cpp \
-$(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_VectorDriver.cpp
+$(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_IAdvancedOperations.cpp \
+$(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_PipeTShapeDriver.cpp \
+$(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_VectorDriver.cpp \
+$(srcdir)/$(geomdir)src/GEOMImpl/GEOMImpl_ProjectionDriver.cpp
 
 # set GEOM sources
 libGEOM_la_SOURCES =  $(srcdir)/$(geomdir)src/GEOM/GEOM_Application.cpp \
@@ -378,6 +393,31 @@ $(srcdir)/$(geomdir)src/ExchangeSTEP/ExchangeSTEP_Import.cpp
 
 # set ExchangeSTL sources
 libExchangeSTL_la_SOURCES =  $(srcdir)/$(geomdir)src/ExchangeSTL/ExchangeSTL_Export.cpp
+
+# set ExchangeOBJ sources
+libExchangeOBJ_la_SOURCES =  $(srcdir)/$(geomdir)src/ExchangeOBJ/ExchangeOBJ_Export.cpp
+
+# set Exchange3DS sources
+libExchange3DS_la_SOURCES =  $(srcdir)/$(geomdir)src/Exchange3DS/Exchange3DS_Export.cpp \
+$(srcdir)/$(geomdir)src/Exchange3DS/Exchange3DS_Import.cpp \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/atmosphere.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/background.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/camera.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/chunk.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/ease.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/file.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/io.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/light.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/material.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/matrix.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/mesh.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/node.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/quat.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/shadow.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/tcb.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/tracks.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/vector.c \
+$(srcdir)/$(geomdir)src/Exchange3DS/lib3ds/viewport.c
 
 # set ExchangeVRML sources
 libExchangeVRML_la_SOURCES =  $(srcdir)/$(geomdir)src/ExchangeVRML/ExchangeVRML_Export.cpp
@@ -453,6 +493,13 @@ $(srcdir)/$(geomdir)src/NMTDS/NMTDS_PassKeyShapeMapHasher.jxx \
 $(srcdir)/$(geomdir)src/NMTDS/NMTDS_Tools.cdl \
 $(srcdir)/$(geomdir)src/NMTDS/NMTDS_Tools.cpp \
 $(srcdir)/$(geomdir)src/NMTDS/NMTDS_Tools.ixx \
+$(srcdir)/$(geomdir)src/NMTDS/NMTDS_BndSphere.cdl \
+$(srcdir)/$(geomdir)src/NMTDS/NMTDS_BndSphere.cpp \
+$(srcdir)/$(geomdir)src/NMTDS/NMTDS_BndSphere.ixx \
+$(srcdir)/$(geomdir)src/NMTDS/NMTDS_BndSphere.jxx \
+$(srcdir)/$(geomdir)src/NMTDS/NMTDS_BndSphereTree.cpp \
+$(srcdir)/$(geomdir)src/NMTDS/NMTDS_IndexedDataMapNodeOfIndexedDataMapOfShapeBndSphere_0.cpp \
+$(srcdir)/$(geomdir)src/NMTDS/NMTDS_IndexedDataMapOfShapeBndSphere_0.cpp \
 $(srcdir)/$(geomdir)src/NMTDS/NMTDS_Tools.jxx
 
 # set NMTTools sources
@@ -518,7 +565,13 @@ $(srcdir)/$(geomdir)src/NMTTools/NMTTools_CheckerSI.cdl \
 $(srcdir)/$(geomdir)src/NMTTools/NMTTools_CheckerSI.cpp \
 $(srcdir)/$(geomdir)src/NMTTools/NMTTools_CheckerSI.ixx \
 $(srcdir)/$(geomdir)src/NMTTools/NMTTools_CheckerSI.jxx \
-$(srcdir)/$(geomdir)src/NMTTools/NMTTools_CheckerSI_1.cpp
+$(srcdir)/$(geomdir)src/NMTTools/NMTTools_CheckerSI_1.cpp \
+$(srcdir)/$(geomdir)src/NMTTools/NMTTools_DataMapIteratorOfDataMapOfIntegerFaceInfo_0.cpp \
+$(srcdir)/$(geomdir)src/NMTTools/NMTTools_DataMapNodeOfDataMapOfIntegerFaceInfo_0.cpp \
+$(srcdir)/$(geomdir)src/NMTTools/NMTTools_DataMapOfIntegerFaceInfo_0.cpp \
+$(srcdir)/$(geomdir)src/NMTTools/NMTTools_FaceInfo.cpp \
+$(srcdir)/$(geomdir)src/NMTTools/NMTTools_FaceInfo.ixx \
+$(srcdir)/$(geomdir)src/NMTTools/NMTTools_FaceInfo.jxx
 
 
 # set Partition sources
@@ -624,7 +677,6 @@ $(srcdir)/$(geomdir)inc/GEOMAlgo_FinderShapeOn2.hxx \
 $(srcdir)/$(geomdir)inc/GEOMAlgo_FinderShapeOn.hxx \
 $(srcdir)/$(geomdir)inc/GEOMAlgo_FinderShapeOnQuad.hxx \
 $(srcdir)/$(geomdir)inc/GEOMAlgo_GlueAnalyser.hxx \
-$(srcdir)/$(geomdir)inc/GEOMAlgo_Gluer1.hxx \
 $(srcdir)/$(geomdir)inc/GEOMAlgo_Gluer.hxx \
 $(srcdir)/$(geomdir)inc/GEOMAlgo_HAlgo.hxx \
 $(srcdir)/$(geomdir)inc/GEOMAlgo_IndexedDataMapNodeOfIndexedDataMapOfIntegerShape.hxx \
@@ -696,6 +748,8 @@ $(srcdir)/$(geomdir)inc/GEOMImpl_DraftDriver.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_EllipseDriver.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_ExportDriver.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_FaceDriver.hxx \
+$(srcdir)/$(geomdir)inc/GEOMImpl_Fillet1d.hxx \
+$(srcdir)/$(geomdir)inc/GEOMImpl_Fillet1dDriver.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_FilletDriver.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_FillingDriver.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_Gen.hxx \
@@ -723,6 +777,7 @@ $(srcdir)/$(geomdir)inc/GEOMImpl_IDisk.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_IDraft.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_IEllipse.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_IFace.hxx \
+$(srcdir)/$(geomdir)inc/GEOMImpl_IFillet1d.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_IFillet.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_IFilling.hxx \
 $(srcdir)/$(geomdir)inc/GEOMImpl_IGlue.hxx \
@@ -925,4 +980,29 @@ $(srcdir)/$(geomdir)inc/ShHealOper_SplitCurve2d.hxx \
 $(srcdir)/$(geomdir)inc/ShHealOper_SplitCurve3d.hxx \
 $(srcdir)/$(geomdir)inc/ShHealOper_Tool.hxx \
 $(srcdir)/$(geomdir)inc/Sketcher_Profile.hxx \
-$(srcdir)/$(geomdir)inc/utilities.h
+$(srcdir)/$(geomdir)inc/GEOMImpl_IAdvancedOperations.hxx \
+$(srcdir)/$(geomdir)inc/GEOMImpl_IPipeTShape.hxx \
+$(srcdir)/$(geomdir)inc/GEOMImpl_PipeTShapeDriver.hxx \
+$(srcdir)/$(geomdir)inc/Handle_NMTDS_IndexedDataMapNodeOfIndexedDataMapOfShapeBndSphere.hxx \
+$(srcdir)/$(geomdir)inc/NMTDS_BndSphere.hxx \
+$(srcdir)/$(geomdir)inc/NMTDS_BndSphere.lxx \
+$(srcdir)/$(geomdir)inc/NMTDS_BndSphereTree.hxx \
+$(srcdir)/$(geomdir)inc/NMTDS_IndexedDataMapNodeOfIndexedDataMapOfShapeBndSphere.hxx \
+$(srcdir)/$(geomdir)inc/NMTDS_IndexedDataMapOfShapeBndSphere.hxx \
+$(srcdir)/$(geomdir)inc/GEOMAlgo_DataMapIteratorOfDataMapOfOrientedShapeShape.hxx \
+$(srcdir)/$(geomdir)inc/GEOMAlgo_DataMapNodeOfDataMapOfOrientedShapeShape.hxx \
+$(srcdir)/$(geomdir)inc/GEOMAlgo_DataMapOfOrientedShapeShape.hxx \
+$(srcdir)/$(geomdir)inc/GEOMAlgo_WESScaler.hxx \
+$(srcdir)/$(geomdir)inc/Handle_GEOMAlgo_DataMapNodeOfDataMapOfOrientedShapeShape.hxx \
+$(srcdir)/$(geomdir)inc/utilities.h \
+$(srcdir)/$(geomdir)inc/GEOMAlgo_GlueDetector.hxx \
+$(srcdir)/$(geomdir)inc/GEOMAlgo_Gluer2.hxx \
+$(srcdir)/$(geomdir)inc/GEOMAlgo_GluerAlgo.hxx \
+$(srcdir)/$(geomdir)inc/GEOMImpl_ProjectionDriver.hxx \
+$(srcdir)/$(geomdir)inc/Handle_NMTTools_DataMapNodeOfDataMapOfIntegerFaceInfo.hxx \
+$(srcdir)/$(geomdir)inc/NMTTools_DataMapIteratorOfDataMapOfIntegerFaceInfo.hxx \
+$(srcdir)/$(geomdir)inc/NMTTools_DataMapNodeOfDataMapOfIntegerFaceInfo.hxx \
+$(srcdir)/$(geomdir)inc/NMTTools_DataMapOfIntegerFaceInfo.hxx \
+$(srcdir)/$(geomdir)inc/NMTTools_FaceInfo.hxx \
+$(srcdir)/$(geomdir)inc/NMTTools_FaceInfo.lxx
+

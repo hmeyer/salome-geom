@@ -33,6 +33,7 @@
 #include <TColStd_HSequenceOfReal.hxx>
 #include <gp_Ax3.hxx>
 #include <Geom_Surface.hxx>
+#include <Precision.hxx>
 
 class GEOM_Engine;
 class Handle(GEOM_Object);
@@ -130,7 +131,13 @@ class GEOMImpl_IMeasureOperations : public GEOM_IOperations {
                                    const Standard_Boolean   theIsCheckGeom,
                                    TCollection_AsciiString& theDump);
 
+  Standard_EXPORT TCollection_AsciiString IsGoodForSolid (Handle(GEOM_Object) theShape);
+
   Standard_EXPORT TCollection_AsciiString WhatIs (Handle(GEOM_Object) theShape);
+
+  Standard_EXPORT std::vector<bool> AreCoordsInside (Handle(GEOM_Object) theShape,
+                                                     const std::vector<double>& coords,
+                                                     double tolerance = Precision::Confusion());
 
   Standard_EXPORT Standard_Real GetMinDistance (Handle(GEOM_Object) theShape1,
                                                 Handle(GEOM_Object) theShape2,
@@ -141,6 +148,8 @@ class GEOMImpl_IMeasureOperations : public GEOM_IOperations {
                                          Standard_Real& theX, Standard_Real& theY, Standard_Real& theZ);
 
   Standard_EXPORT Standard_Real GetAngle (Handle(GEOM_Object) theLine1, Handle(GEOM_Object) theLine2);
+
+  Standard_EXPORT Standard_Real GetAngleBtwVectors (Handle(GEOM_Object) theVec1, Handle(GEOM_Object) theVec2);
 
 
   // Methods for recieving radiuses of curvature of curves and surfaces

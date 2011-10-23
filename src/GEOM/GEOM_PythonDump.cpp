@@ -50,13 +50,14 @@ namespace GEOM
     }
   }
 
-//  TPythonDump::operator TCollection_AsciiString () const
-//  {
-//    if (myCounter == 1) {
-//      return TCollection_AsciiString ((char *)myStream.str().c_str());
-//    }
-//    return TCollection_AsciiString ();
-//  }
+  TPythonDump& TPythonDump::operator<< (bool theArg)
+  {
+    if (theArg)
+      myStream << "True";
+    else
+      myStream << "False";
+    return *this;
+  }
 
   TPythonDump& TPythonDump::operator<< (long int theArg)
   {

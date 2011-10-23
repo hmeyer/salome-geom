@@ -366,6 +366,22 @@
 				RelativePath="..\..\src\NMTTools\NMTTools_Tools.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\NMTTools\NMTTools_DataMapIteratorOfDataMapOfIntegerFaceInfo_0.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\NMTTools\NMTTools_DataMapNodeOfDataMapOfIntegerFaceInfo_0.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\NMTTools\NMTTools_DataMapOfIntegerFaceInfo_0.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\NMTTools\NMTTools_FaceInfo.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

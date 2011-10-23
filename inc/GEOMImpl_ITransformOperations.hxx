@@ -26,8 +26,13 @@
 #include "GEOM_Engine.hxx"
 #include "GEOM_Object.hxx"
 #include <TDocStd_Document.hxx>
+#include <TopoDS_Shape.hxx>
 
-class GEOMImpl_ITransformOperations : public GEOM_IOperations {
+class GEOMImpl_ITranslate;
+class GEOMImpl_IRotate;
+
+class GEOMImpl_ITransformOperations : public GEOM_IOperations
+{
  public:
   Standard_EXPORT GEOMImpl_ITransformOperations(GEOM_Engine* theEngine, int theDocID);
   Standard_EXPORT ~GEOMImpl_ITransformOperations();
@@ -62,6 +67,13 @@ class GEOMImpl_ITransformOperations : public GEOM_IOperations {
 
   Standard_EXPORT Handle(GEOM_Object) TranslateAlongRail( Handle(GEOM_Object) theObject,
                     Handle(GEOM_Object) theRail, const GEOM_Parameter& theStep, const GEOM_Parameter& theNbTimes, const GEOM_Parameter& theType);
+  /*
+  Standard_EXPORT static TopoDS_Shape TranslateShape1D (const TopoDS_Shape&  theShape,
+                                                        GEOMImpl_ITranslate* theTI);
+
+  Standard_EXPORT static TopoDS_Shape TranslateShape2D (const TopoDS_Shape&  theShape,
+                                                        GEOMImpl_ITranslate* theTI);
+  */
 
   Standard_EXPORT Handle(GEOM_Object) MirrorPlane (Handle(GEOM_Object) theObject,
                                    Handle(GEOM_Object) thePlane);
@@ -86,6 +98,8 @@ class GEOMImpl_ITransformOperations : public GEOM_IOperations {
 
   Standard_EXPORT Handle(GEOM_Object) OffsetShapeCopy (Handle(GEOM_Object) theObject,
 									   const GEOM_Parameter&  theOffset, const GEOM_Parameter& theHeightOffset, bool isPlanar);
+  Standard_EXPORT Handle(GEOM_Object) ProjectShapeCopy (Handle(GEOM_Object) theSource,
+                                                        Handle(GEOM_Object) theTarget);
 
   Standard_EXPORT Handle(GEOM_Object) ScaleShape (Handle(GEOM_Object) theObject,
                                   Handle(GEOM_Object) thePoint,
@@ -147,6 +161,9 @@ class GEOMImpl_ITransformOperations : public GEOM_IOperations {
 							 Handle(GEOM_Object) theCentPoint, 
 							 Handle(GEOM_Object) thePoint1,
 							 Handle(GEOM_Object) thePoint2);
+
+  Standard_EXPORT Handle(GEOM_Object) TransformLikeOtherCopy (Handle(GEOM_Object) theObject,
+                                                              Handle(GEOM_Object) theSample);
 
 };
 

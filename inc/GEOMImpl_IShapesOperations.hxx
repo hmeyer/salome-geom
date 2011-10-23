@@ -26,7 +26,7 @@
 // Project   : SALOME
 // $Header: /home/server/cvs/GEOM/GEOM_SRC/src/GEOMImpl/GEOMImpl_IShapesOperations.hxx,v 1.13.2.3 2008/11/27 10:36:56 abd Exp $
 //=============================================================================
-//
+
 #ifndef _GEOMImpl_IShapesOperations_HXX_
 #define _GEOMImpl_IShapesOperations_HXX_
 
@@ -34,18 +34,27 @@
 
 #include "GEOMAlgo_State.hxx"
 
+#include <TopoDS_Shape.hxx>
 #include <TopTools_ListOfShape.hxx>
+#include <NCollection_DataMap.hxx>
 #include <TColStd_HSequenceOfTransient.hxx>
 #include <TColStd_HSequenceOfInteger.hxx>
 
-#include <list>
 #include <Handle_Geom_Surface.hxx>
 
 #include <gp_Pnt.hxx>
 
+#include <list>
+#include <functional>
+
 class GEOM_Engine;
 class Handle(GEOM_Object);
 class Handle(TColStd_HArray1OfInteger);
+
+inline Standard_Boolean IsEqual (const TopoDS_Shape& S1, const TopoDS_Shape& S2)
+{
+  return S1.IsSame(S2);
+}
 
 class GEOMImpl_IShapesOperations : public GEOM_IOperations
 {
@@ -55,7 +64,11 @@ class GEOMImpl_IShapesOperations : public GEOM_IOperations
 
   Standard_EXPORT Handle(GEOM_Object) MakeEdge (Handle(GEOM_Object) thePoint1,
                                 Handle(GEOM_Object) thePoint2);
-								
+
+  Standard_EXPORT Handle(GEOM_Object) MakeEdgeOnCurveByLength (Handle(GEOM_Object) theCurve,
+                                                               const GEOM_Parameter& theLength,
+                                               Handle(GEOM_Object) theStartPoint);
+
   Standard_EXPORT Handle(GEOM_Object) MakeEdgeWire (Handle(GEOM_Object) theWire,
 						    const Standard_Real theLinearTolerance,
 						    const Standard_Real theAngularTolerance);
@@ -70,8 +83,6 @@ class GEOMImpl_IShapesOperations : public GEOM_IOperations
 
   Standard_EXPORT Handle(GEOM_Object) MakeShell (std::list<Handle(GEOM_Object)> theShapes);
 
-  Standard_EXPORT Handle(GEOM_Object) MakeSolidShell (Handle(GEOM_Object) theShell);
-
   Standard_EXPORT Handle(GEOM_Object) MakeSolidShells (std::list<Handle(GEOM_Object)> theShells);
 
   Standard_EXPORT Handle(GEOM_Object) MakeCompound (std::list<Handle(GEOM_Object)> theShapes);
@@ -80,28 +91,54 @@ class GEOMImpl_IShapesOperations : public GEOM_IOperations
 						     const Standard_Real theTolerance,
                                                      const Standard_Boolean doKeepNonSolids);
 
-  Standard_EXPORT Handle(TColStd_HSequenceOfTransient) GetGlueFaces (Handle(GEOM_Object) theShape,
-								     const Standard_Real theTolerance);
+  //Standard_EXPORT Handle(TColStd_HSequenceOfTransient) GetGlueFaces (Handle(GEOM_Object) theShape,
+  //                                                                   const Standard_Real theTolerance);
 
   Standard_EXPORT Handle(GEOM_Object) MakeGlueFacesByList (Handle(GEOM_Object) theShape,
 							   const Standard_Real theTolerance,
 							   std::list<Handle(GEOM_Object)> theFaces,
-                                                           const Standard_Boolean doKeepNonSolids);
+                                                           const Standard_Boolean doKeepNonSolids,
+                                                           const Standard_Boolean doGlueAllEdges);
+
+  Standard_EXPORT Handle(GEOM_Object) MakeGlueEdges (Handle(GEOM_Object) theShape,
+                                                     const Standard_Real theTolerance);
+
+  Standard_EXPORT Handle(TColStd_HSequenceOfTransient) GetGlueShapes (Handle(GEOM_Object) theShape,
+                                                                      const Standard_Real theTolerance,
+                                                                      const TopAbs_ShapeEnum theType);
+
+  Standard_EXPORT Handle(GEOM_Object) MakeGlueEdgesByList (Handle(GEOM_Object) theShape,
+                                                           const Standard_Real theTolerance,
+                                                           std::list<Handle(GEOM_Object)> theEdges);
 
   Standard_EXPORT Handle(TColStd_HSequenceOfTransient) GetExistingSubObjects
     (Handle(GEOM_Object)    theShape,
      const Standard_Boolean theGroupsOnly);
 
-  Standard_EXPORT Handle(TColStd_HSequenceOfTransient) MakeExplode (Handle(GEOM_Object)    theShape,
-                                                                    const Standard_Integer theShapeType,
-                                                                    const Standard_Boolean isSorted);
+  enum ExplodeType {
+    EXPLODE_OLD_INCLUDE_MAIN,
+    EXPLODE_NEW_INCLUDE_MAIN,
+    EXPLODE_NEW_EXCLUDE_MAIN
+  };
 
-  Standard_EXPORT Handle(TColStd_HSequenceOfInteger) SubShapeAllIDs (Handle(GEOM_Object)    theShape,
+  Standard_EXPORT Handle(TColStd_HSequenceOfTransient) MakeExplode
+    (Handle(GEOM_Object)    theShape,
+                                                                    const Standard_Integer theShapeType,
+     const Standard_Boolean isSorted,
+     const ExplodeType      theExplodeType = EXPLODE_NEW_INCLUDE_MAIN);
+
+  Standard_EXPORT Handle(TColStd_HSequenceOfInteger) SubShapeAllIDs
+    (Handle(GEOM_Object)    theShape,
                                                                      const Standard_Integer theShapeType,
-                                                                     const Standard_Boolean isSorted);
+     const Standard_Boolean isSorted,
+     const ExplodeType      theExplodeType = EXPLODE_NEW_INCLUDE_MAIN);
 
   Standard_EXPORT Handle(GEOM_Object) GetSubShape (Handle(GEOM_Object)    theMainShape,
                                                    const Standard_Integer theID);
+
+  Standard_EXPORT Handle(TColStd_HSequenceOfTransient) MakeSubShapes
+    (Handle(GEOM_Object)              theMainShape,
+     Handle(TColStd_HArray1OfInteger) theIndices);
 
   Standard_EXPORT Standard_Integer GetSubShapeIndex (Handle(GEOM_Object) theMainShape,
                                                      Handle(GEOM_Object) theSubShape);
@@ -118,11 +155,17 @@ class GEOMImpl_IShapesOperations : public GEOM_IOperations
 
   Standard_EXPORT Handle(TColStd_HSequenceOfInteger) GetFreeFacesIDs (Handle(GEOM_Object) theShape);
 
-  Standard_EXPORT Handle(TColStd_HSequenceOfTransient) GetSharedShapes (Handle(GEOM_Object)    theShape1,
+  Standard_EXPORT Handle(TColStd_HSequenceOfTransient)
+    GetSharedShapes (Handle(GEOM_Object)    theShape1,
                                                         Handle(GEOM_Object)    theShape2,
                                                         const Standard_Integer theShapeType);
 
-  Standard_EXPORT Handle(TColStd_HSequenceOfTransient) GetShapesOnPlane (const Handle(GEOM_Object)& theShape,
+  Standard_EXPORT Handle(TColStd_HSequenceOfTransient)
+    GetSharedShapes (std::list<Handle(GEOM_Object)> theShapes,
+                     const Standard_Integer         theShapeType);
+
+  Standard_EXPORT Handle(TColStd_HSequenceOfTransient)
+    GetShapesOnPlane (const Handle(GEOM_Object)& theShape,
                                                          const Standard_Integer     theShapeType,
                                                          const Handle(GEOM_Object)& theAx1,
                                                          const GEOMAlgo_State       theState);
@@ -325,7 +368,20 @@ class GEOMImpl_IShapesOperations : public GEOM_IOperations
    * \brief Sort shapes in the list by their coordinates.
    * \param SL The list of shapes to sort.
    */
-  Standard_EXPORT static void SortShapes (TopTools_ListOfShape& SL);
+  struct CompareShapes : public std::binary_function<TopoDS_Shape, TopoDS_Shape, bool>
+  {
+    CompareShapes (bool isOldSorting)
+      : myIsOldSorting(isOldSorting) {}
+
+    bool operator()(const TopoDS_Shape& lhs, const TopoDS_Shape& rhs);
+
+    typedef NCollection_DataMap<TopoDS_Shape, std::pair<double, double> > NCollection_DataMapOfShapeDouble;
+    NCollection_DataMapOfShapeDouble myMap;
+    bool myIsOldSorting;
+  };
+
+  Standard_EXPORT static void SortShapes (TopTools_ListOfShape& SL,
+                                          const Standard_Boolean isOldSorting = Standard_True);
 
   /*!
    * \brief Convert TopoDS_COMPSOLID to TopoDS_COMPOUND.
@@ -343,6 +399,13 @@ class GEOMImpl_IShapesOperations : public GEOM_IOperations
    * \retval bool Returns false if the shape has no faces, i.e. impossible to build triangulation.
    */
   Standard_EXPORT static bool CheckTriangulation (const TopoDS_Shape& theShape);
+
+  /*!
+   * \brief Return type of shape for explode. In case of compound it will be a type of its first sub shape.
+   * \param theShape The shape to get type of.
+   * \retval TopAbs_ShapeEnum Return type of shape for explode.
+   */
+  Standard_EXPORT static TopAbs_ShapeEnum GetTypeOfSimplePart (const TopoDS_Shape& theShape);
 
  private:
   Handle(GEOM_Object) MakeShape (std::list<Handle(GEOM_Object)>      theShapes,

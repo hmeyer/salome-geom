@@ -22,6 +22,13 @@
 #ifndef _GEOMAlgo_Gluer_HeaderFile
 #define _GEOMAlgo_Gluer_HeaderFile
 
+#ifndef _Standard_HeaderFile
+#include <Standard.hxx>
+#endif
+#ifndef _Standard_Macro_HeaderFile
+#include <Standard_Macro.hxx>
+#endif
+
 #ifndef _Standard_Boolean_HeaderFile
 #include <Standard_Boolean.hxx>
 #endif
@@ -40,17 +47,11 @@
 #ifndef _TopTools_ListOfShape_HeaderFile
 #include <TopTools_ListOfShape.hxx>
 #endif
-#ifndef _TopTools_MapOfShape_HeaderFile
-#include <TopTools_MapOfShape.hxx>
-#endif
 #ifndef _GEOMAlgo_ShapeAlgo_HeaderFile
 #include <GEOMAlgo_ShapeAlgo.hxx>
 #endif
 #ifndef _TopAbs_ShapeEnum_HeaderFile
 #include <TopAbs_ShapeEnum.hxx>
-#endif
-#ifndef _TopoDS_Compound_HeaderFile
-#include <TopoDS_Compound.hxx>
 #endif
 class TopTools_ListOfShape;
 class TopoDS_Shape;
@@ -60,14 +61,9 @@ class TopoDS_Face;
 class TopoDS_Vertex;
 class TopTools_DataMapOfShapeListOfShape;
 class TopTools_DataMapOfShapeShape;
+class TopTools_MapOfShape;
+class TopoDS_Compound;
 
-
-#ifndef _Standard_HeaderFile
-#include <Standard.hxx>
-#endif
-#ifndef _Standard_Macro_HeaderFile
-#include <Standard_Macro.hxx>
-#endif
 
 
 class GEOMAlgo_Gluer  : public GEOMAlgo_ShapeAlgo {
@@ -86,8 +82,6 @@ public:
       { 
         if (anAddress) Standard::Free((Standard_Address&)anAddress); 
       }
- // Methods PUBLIC
- // 
 
 
 Standard_EXPORT GEOMAlgo_Gluer();
@@ -98,10 +92,6 @@ Standard_EXPORT   void SetCheckGeometry(const Standard_Boolean aFlag) ;
 
 
 Standard_EXPORT   Standard_Boolean CheckGeometry() const;
-
-
-Standard_EXPORT   void SetKeepNonSolids(const Standard_Boolean aFlag) ;
-
 
 Standard_EXPORT virtual  void Perform() ;
 
@@ -114,23 +104,23 @@ Standard_EXPORT  const TopTools_ListOfShape& Modified(const TopoDS_Shape& S) ;
 
 Standard_EXPORT  const TopTools_ListOfShape& Generated(const TopoDS_Shape& S) ;
 
+  Standard_EXPORT     Standard_Boolean IsDeleted(const TopoDS_Shape& S) ;
 
-Standard_EXPORT   Standard_Boolean IsDeleted(const TopoDS_Shape& S) ;
+  Standard_EXPORT    const TopTools_DataMapOfShapeListOfShape& Images() const;
 
+  Standard_EXPORT    const TopTools_DataMapOfShapeShape& Origins() const;
 
-Standard_EXPORT  const TopTools_DataMapOfShapeListOfShape& Images() const;
+  Standard_EXPORT     void MakeSubShapes(const TopoDS_Shape& aS,TopTools_MapOfShape& aM,TopoDS_Compound& aC) ;
 
+  Standard_EXPORT     void SetKeepNonSolids(const Standard_Boolean bFlag) ;
 
-Standard_EXPORT  const TopTools_DataMapOfShapeShape& Origins() const;
+  Standard_EXPORT     Standard_Boolean KeepNonSolids() const;
 
 
 
 
 
 protected:
-
- // Methods PROTECTED
- // 
 
 
 Standard_EXPORT virtual  void CheckData() ;
@@ -152,12 +142,6 @@ Standard_EXPORT   void MakeShapes(const TopAbs_ShapeEnum aType) ;
 
 
 Standard_EXPORT   void MakeShells() ;
-
-
-Standard_EXPORT   void MakeSubShapes(const TopoDS_Shape& theShape,
-                                     TopTools_MapOfShape& theMS,
-                                     TopoDS_Compound& theResult);
-
 
 Standard_EXPORT   void MakeSolids() ;
 
@@ -186,25 +170,19 @@ Standard_EXPORT   Standard_Boolean IsToReverse(const TopoDS_Face& aFR,const Topo
 Standard_EXPORT   Standard_Boolean HasNewSubShape(const TopoDS_Shape& aS) const;
 
 
- // Fields PROTECTED
- //
 Standard_Boolean myCheckGeometry;
-Standard_Boolean myKeepNonSolids;
 Standard_Real myTol;
 TopTools_DataMapOfShapeListOfShape myImages;
 TopTools_DataMapOfShapeShape myOrigins;
 Standard_Integer myNbAlone;
 TopTools_ListOfShape myGenerated;
+Standard_Boolean myKeepNonSolids;
 
 
 private: 
 
- // Methods PRIVATE
- // 
 
 
- // Fields PRIVATE
- //
 
 
 };

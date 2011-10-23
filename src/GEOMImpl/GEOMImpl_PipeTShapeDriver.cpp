@@ -30,7 +30,6 @@
 #include "GEOMAlgo_FinderShapeOn1.hxx"
 #include "GEOMAlgo_FinderShapeOn2.hxx"
 #include <GEOMAlgo_ClsfBox.hxx>
-#include <GEOMAlgo_Gluer.hxx>
 
 #include <TFunction_Logbook.hxx>
 #include <StdFail_NotDone.hxx>

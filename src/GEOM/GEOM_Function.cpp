@@ -59,6 +59,11 @@
 #include <Standard_Failure.hxx>
 #include <Standard_ErrorHandler.hxx> // CAREFUL ! position of this file is critic : see Lucien PIGNOLONI / OCC
 
+// This modification was introduced in frame of Mantis issue 0021251.
+// This line allows to keep shape orientation together with the shape itself.
+// Otherwise orientation can be lost in some cases.
+#define KEEP_ORIENTATION_0021251
+
 #define ARGUMENT_LABEL 1
 #define RESULT_LABEL 2
 #define DESCRIPTION_LABEL 3
@@ -68,7 +73,11 @@
 #define SCRIPTCOMMAND_LABEL 6
 
 #define SUBSHAPES_LABEL 7 // 0020756: GetGroups
-#define NAMING_LABEL 8 // 002020750: Naming during STEP import
+#define NAMING_LABEL 8 // 0020750: Naming during STEP import
+
+#ifdef KEEP_ORIENTATION_0021251
+#define ORIENTATION_LABEL 9 // 0021251: TNaming_NamedShape doesn't store orientation
+#endif
 
 
 #define STD_DOCUMENT_MAIN_LABEL 1
@@ -106,13 +115,9 @@ const Standard_GUID& GEOM_Function::GetDependencyID()
 //=============================================================================
 Handle(GEOM_Function) GEOM_Function::GetFunction(const TDF_Label& theEntry)
 {
-  Handle(GEOM_Function) myRetVal;
+  if(!theEntry.IsAttribute(TFunction_Function::GetID())) return NULL;
 
-  if(!theEntry.IsNull())
-    if(theEntry.IsAttribute(TFunction_Function::GetID()))
-      myRetVal = new GEOM_Function(theEntry);
-
-  return myRetVal;
+  return new GEOM_Function(theEntry);
 }
 
 //=============================================================================
@@ -216,7 +221,7 @@ TopoDS_Shape GEOM_Function::GetValue()
 	  Handle(GEOM_Function) mySubShapeFunction;
 	  if (this->GetType() == 28) 	//this func is a subshape
 		mySubShapeFunction = this;
-	  else						//this func is a modification fo a subshape
+	  else						//this func is a modification of a subshape
 		mySubShapeFunction = anObject->GetFunction(1);
 	  GEOM_ISubShape aCI (mySubShapeFunction);
 
@@ -255,6 +260,15 @@ TopoDS_Shape GEOM_Function::GetValue()
 
   aShape = aNS->Get();
 
+#ifdef KEEP_ORIENTATION_0021251
+  // 0021251: TNaming_NamedShape doesn't store orientation
+  TDF_Label anOrientationLabel = _label.FindChild(ORIENTATION_LABEL);
+  Handle(TDataStd_Integer) anInteger;
+  if (anOrientationLabel.FindAttribute(TDataStd_Integer::GetID(), anInteger)) {
+    aShape.Orientation((TopAbs_Orientation)anInteger->Get());
+  }
+#endif
+
   _isDone = true;
   return aShape;
 }
@@ -271,6 +285,12 @@ void GEOM_Function::SetValue(TopoDS_Shape& theShape)
   TNaming_Builder aBuilder(aResultLabel);
 
   aBuilder.Generated(theShape);
+
+#ifdef KEEP_ORIENTATION_0021251
+  // 0021251: TNaming_NamedShape doesn't store orientation
+  TDF_Label anOrientationLabel = _label.FindChild(ORIENTATION_LABEL);
+  TDataStd_Integer::Set(anOrientationLabel, (int)theShape.Orientation());
+#endif
 
   // synchronisation between main shape and its sub-shapes
   TDF_Label aLabel = GetOwnerEntry();

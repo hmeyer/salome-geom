@@ -83,9 +83,9 @@
 #include <NMTTools_ListIteratorOfListOfCommonBlock.hxx>
 // Modified  Thu Sep 14 14:35:18 2006 
 // Contribution of Samtech www.samcef.com BEGIN
-static 
-  void FuseVertices(const TopoDS_Shape& aCompound,
-		    TopTools_DataMapOfShapeShape& aDMVV);
+// static 
+//   void FuseVertices(const TopoDS_Shape& aCompound,
+//                     TopTools_DataMapOfShapeShape& aDMVV);
 // Contribution of Samtech www.samcef.com END
 
 //=======================================================================
@@ -199,7 +199,7 @@ static
     }
     //
     NMTTools_ListOfCommonBlock& aLCB=myCommonBlockPool(myDS->RefEdge(nE));
-    BOPTools_ListOfPaveBlock& aLPB=mySplitShapesPool  (myDS->RefEdge(nE));
+    /*BOPTools_ListOfPaveBlock& aLPB=*/mySplitShapesPool  (myDS->RefEdge(nE));
     //
     aCBIt.Initialize(aLCB);
     for (; aCBIt.More(); aCBIt.Next()) {

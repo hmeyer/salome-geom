@@ -17,7 +17,6 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#include "utilities.h"
 
 #include <Standard_Stream.hxx>
 
@@ -28,18 +27,22 @@
 #include <GEOM_Object.hxx>
 #include <GEOM_Function.hxx>
 
-#include <GEOMAlgo_Gluer.hxx>
-#include "GEOMAlgo_Gluer1.hxx"
+//#include <GEOMAlgo_Gluer.hxx>
+//#include "GEOMAlgo_Gluer1.hxx"
+#include "GEOMAlgo_Gluer2.hxx"
 #include "GEOMAlgo_ListIteratorOfListOfCoupleOfShapes.hxx"
 #include "GEOMAlgo_CoupleOfShapes.hxx"
 #include "GEOMAlgo_ListOfCoupleOfShapes.hxx"
+
+#include "utilities.h"
 
 #include <TDataStd_IntegerArray.hxx>
 
 #include <TopExp.hxx>
 #include <TopoDS_Shape.hxx>
-#include <TopTools_ListOfShape.hxx>
+#include <TopTools_DataMapIteratorOfDataMapOfShapeListOfShape.hxx>
 #include <TopTools_IndexedMapOfShape.hxx>
+#include <TopTools_ListOfShape.hxx>
 #include <TopTools_ListIteratorOfListOfShape.hxx>
 
 #include <ShapeFix_Shape.hxx>
@@ -72,6 +75,7 @@ const Standard_GUID& GEOMImpl_GlueDriver::GetID()
 //function : GlueFacesWithWarnings
 //purpose  :
 //=======================================================================
+/*
 TopoDS_Shape GEOMImpl_GlueDriver::GlueFacesWithWarnings (const TopoDS_Shape& theShape,
 														 const Standard_Real theTolerance,
 														 const Standard_Boolean doKeepNonSolids,
@@ -209,7 +213,6 @@ TopoDS_Shape GEOMImpl_GlueDriver::GlueFaces (const TopoDS_Shape& theShape,
 											 const Standard_Real theTolerance,
 											 const Standard_Boolean doKeepNonSolids)
 {
-  Standard_Integer iErr, iWrn;
   TopoDS_Shape aRes;
   GEOMAlgo_Gluer aGluer;
 
@@ -220,7 +223,7 @@ TopoDS_Shape GEOMImpl_GlueDriver::GlueFaces (const TopoDS_Shape& theShape,
 
   aGluer.Perform();
 
-  iErr = aGluer.ErrorStatus();
+  Standard_Integer iErr = aGluer.ErrorStatus();
   if (iErr) {
     switch (iErr) {
     case 2:
@@ -247,7 +250,7 @@ TopoDS_Shape GEOMImpl_GlueDriver::GlueFaces (const TopoDS_Shape& theShape,
     return aRes;
   }
 
-  iWrn = aGluer.WarningStatus();
+  Standard_Integer iWrn = aGluer.WarningStatus();
   if (iWrn) {
     switch (iWrn) {
     case 1:
@@ -315,7 +318,358 @@ TopoDS_Shape GEOMImpl_GlueDriver::GlueFacesByList (const TopoDS_Shape& theShape,
 
   return aRes;
 }
+*/
 
+//=======================================================================
+//function : GlueFaces
+//purpose  :
+//=======================================================================
+TopoDS_Shape GEOMImpl_GlueDriver::GlueFaces (const TopoDS_Shape& theShape,
+                                             const Standard_Real theTolerance,
+                                             const Standard_Boolean doKeepNonSolids)
+{
+  TopoDS_Shape aRes;
+
+  GEOMAlgo_Gluer2 aGA;
+
+  // 1. Initialization
+  aGA.SetArgument(theShape);
+  aGA.SetTolerance(theTolerance);
+  aGA.SetKeepNonSolids(doKeepNonSolids);
+
+  // 2. Detect interferred shapes
+  aGA.Detect();
+  Standard_Integer iErr = aGA.ErrorStatus();
+  if (iErr) {
+    switch (iErr) {
+    case 11:
+      Standard_Failure::Raise("GEOMAlgo_GlueDetector failed");
+      break;
+    case 13:
+    case 14:
+      Standard_Failure::Raise("PerformImagesToWork failed");
+      break;
+    default:
+      {
+        // description of all errors see in GEOMAlgo_Gluer2.cxx
+        TCollection_AsciiString aMsg ("Error in GEOMAlgo_Gluer2 with code ");
+        aMsg += TCollection_AsciiString(iErr);
+        Standard_Failure::Raise(aMsg.ToCString());
+        break;
+      }
+    }
+    return aRes;
+  }
+
+  // 3. Set shapes to glue. If the operator is absent, the whole gluing will be done
+  //aGA.SetShapesToGlue(aMSG);
+
+  // 4. Gluing
+  aGA.Perform();
+  iErr = aGA.ErrorStatus();
+  if (iErr) {
+    switch (iErr) {
+    case 11:
+      Standard_Failure::Raise("GEOMAlgo_GlueDetector failed");
+      break;
+    case 13:
+    case 14:
+      Standard_Failure::Raise("PerformImagesToWork failed");
+      break;
+    default:
+      {
+        // description of all errors see in GEOMAlgo_Gluer2.cxx
+        TCollection_AsciiString aMsg ("Error in GEOMAlgo_Gluer2 with code ");
+        aMsg += TCollection_AsciiString(iErr);
+        Standard_Failure::Raise(aMsg.ToCString());
+        break;
+      }
+    }
+    return aRes;
+  }
+
+  Standard_Integer iWrn = aGA.WarningStatus();
+  if (iWrn) {
+    switch (iWrn) {
+    case 1:
+      MESSAGE("No shapes to glue");
+      break;
+    default:
+      // description of all warnings see in GEOMAlgo_Gluer2.cxx
+      MESSAGE("Warning in GEOMAlgo_Gluer2 with code " << iWrn);
+      break;
+    }
+  }
+
+  // 5. Result
+  aRes = aGA.Shape();
+
+  return aRes;
+}
+
+//=======================================================================
+//function : GlueWithWarnings
+//purpose  :
+//=======================================================================
+TopoDS_Shape GEOMImpl_GlueDriver::GlueWithWarnings (const TopoDS_Shape& theShape,
+                                                    const Standard_Real theTolerance,
+                                                    const TopAbs_ShapeEnum theShapeType,
+                                                    const Standard_Boolean doKeepNonSolids,
+                                                    TCollection_AsciiString& theWarning) const
+{
+  TopoDS_Shape aRes;
+
+  GEOMAlgo_Gluer2 aGA;
+
+  // 1. Initialization
+  aGA.SetArgument(theShape);
+  aGA.SetTolerance(theTolerance);
+  aGA.SetKeepNonSolids(doKeepNonSolids);
+
+  // 2. Detect interferred shapes
+  aGA.Detect();
+  Standard_Integer iErr = aGA.ErrorStatus();
+  if (iErr) {
+    switch (iErr) {
+    case 11:
+      Standard_Failure::Raise("GEOMAlgo_GlueDetector failed");
+      break;
+    case 13:
+    case 14:
+      Standard_Failure::Raise("PerformImagesToWork failed");
+      break;
+    default:
+      {
+        // description of all errors see in GEOMAlgo_Gluer2.cxx
+        TCollection_AsciiString aMsg ("Error in GEOMAlgo_Gluer2 with code ");
+        aMsg += TCollection_AsciiString(iErr);
+        Standard_Failure::Raise(aMsg.ToCString());
+        break;
+      }
+    }
+    return aRes;
+  }
+
+  if (theShapeType != TopAbs_FACE) {
+    // 3. Fill shapes to glue aMSG
+    TopTools_DataMapOfShapeListOfShape aMSG;
+    const TopTools_DataMapOfShapeListOfShape& aMSD = aGA.ShapesDetected();
+    TopTools_DataMapIteratorOfDataMapOfShapeListOfShape aItMSD;
+    aItMSD.Initialize(aMSD);
+    for (; aItMSD.More(); aItMSD.Next()) {
+      const TopoDS_Shape& aSx = aItMSD.Key();
+      const TopTools_ListOfShape& aLSD = aItMSD.Value();
+      if (aSx.ShapeType() == theShapeType) {
+        aMSG.Bind(aSx, aLSD);
+      }
+    }
+
+    // 4. Set shapes to glue. If the operator is absent, the whole gluing will be done
+    aGA.SetShapesToGlue(aMSG);
+  }
+
+  // 5. Gluing
+  aGA.Perform();
+  iErr = aGA.ErrorStatus();
+  if (iErr) {
+    switch (iErr) {
+    case 11:
+      Standard_Failure::Raise("GEOMAlgo_GlueDetector failed");
+      break;
+    case 13:
+    case 14:
+      Standard_Failure::Raise("PerformImagesToWork failed");
+      break;
+    default:
+      {
+        // description of all errors see in GEOMAlgo_Gluer2.cxx
+        TCollection_AsciiString aMsg ("Error in GEOMAlgo_Gluer2 with code ");
+        aMsg += TCollection_AsciiString(iErr);
+        Standard_Failure::Raise(aMsg.ToCString());
+        break;
+      }
+    }
+    return aRes;
+  }
+
+  Standard_Integer iWrn = aGA.WarningStatus();
+  if (iWrn) {
+    switch (iWrn) {
+    case 1:
+      theWarning = "No shapes to glue";
+      break;
+    default:
+      // description of all warnings see in GEOMAlgo_Gluer2.cxx
+      theWarning = "Warning in GEOMAlgo_Gluer2 with code ";
+      theWarning += TCollection_AsciiString(iWrn);
+      break;
+    }
+  }
+
+  // 6. Result
+  aRes = aGA.Shape();
+
+  // 7. Fill history to be used by GetInPlace functionality
+  TopTools_IndexedMapOfShape aResIndices;
+  TopExp::MapShapes(aRes, aResIndices);
+
+  Handle(GEOM_Function) aFunction = GEOM_Function::GetFunction(Label());
+
+  // history for all argument shapes
+  TDF_LabelSequence aLabelSeq;
+  aFunction->GetDependency(aLabelSeq);
+  Standard_Integer nbArg = aLabelSeq.Length();
+
+  for (Standard_Integer iarg = 1; iarg <= nbArg; iarg++) {
+
+    TDF_Label anArgumentRefLabel = aLabelSeq.Value(iarg);
+
+    Handle(GEOM_Object) anArgumentObject = GEOM_Object::GetReferencedObject(anArgumentRefLabel);
+    TopoDS_Shape anArgumentShape = anArgumentObject->GetValue();
+
+    TopTools_IndexedMapOfShape anArgumentIndices;
+    TopExp::MapShapes(anArgumentShape, anArgumentIndices);
+    Standard_Integer nbArgumentEntities = anArgumentIndices.Extent();
+
+    // Find corresponding label in history
+    TDF_Label anArgumentHistoryLabel =
+      aFunction->GetArgumentHistoryEntry(anArgumentRefLabel, Standard_True);
+
+    for (Standard_Integer ie = 1; ie <= nbArgumentEntities; ie++) {
+      TopoDS_Shape anEntity = anArgumentIndices.FindKey(ie);
+      const TopTools_ListOfShape& aModified = aGA.Modified(anEntity);
+      Standard_Integer nbModified = aModified.Extent();
+
+      if (nbModified > 0) {
+        TDF_Label aWhatHistoryLabel = anArgumentHistoryLabel.FindChild(ie, Standard_True);
+        Handle(TDataStd_IntegerArray) anAttr =
+          TDataStd_IntegerArray::Set(aWhatHistoryLabel, 1, nbModified);
+
+        TopTools_ListIteratorOfListOfShape itM (aModified);
+        for (int im = 1; itM.More(); itM.Next(), ++im) {
+          int id = aResIndices.FindIndex(itM.Value());
+          anAttr->SetValue(im, id);
+        }
+      }
+    }
+  }
+
+  return aRes;
+}
+
+//=======================================================================
+//function : GlueByList
+//purpose  :
+//=======================================================================
+TopoDS_Shape GEOMImpl_GlueDriver::GlueByList (const TopoDS_Shape& theShape,
+                                              const Standard_Real theTolerance,
+                                              const Standard_Boolean doKeepNonSolids,
+                                              const TopTools_MapOfShape& theShapesList,
+                                              const Standard_Boolean doGlueAllEdges)
+{
+  TopoDS_Shape aRes;
+
+  GEOMAlgo_Gluer2 aGA;
+
+  // 1. Initialization
+  aGA.SetArgument(theShape);
+  aGA.SetTolerance(theTolerance);
+  aGA.SetKeepNonSolids(doKeepNonSolids);
+
+  // 2. Detect interferred shapes
+  aGA.Detect();
+  Standard_Integer iErr = aGA.ErrorStatus();
+  if (iErr) {
+    switch (iErr) {
+    case 11:
+      Standard_Failure::Raise("GEOMAlgo_GlueDetector failed");
+      break;
+    case 13:
+    case 14:
+      Standard_Failure::Raise("PerformImagesToWork failed");
+      break;
+    default:
+      {
+        // description of all errors see in GEOMAlgo_Gluer2.cxx
+        TCollection_AsciiString aMsg ("Error in GEOMAlgo_Gluer2 with code ");
+        aMsg += TCollection_AsciiString(iErr);
+        Standard_Failure::Raise(aMsg.ToCString());
+        break;
+      }
+    }
+    return aRes;
+  }
+
+  // 3. Fill shapes to glue aMSG
+  TopTools_DataMapOfShapeListOfShape aMSG;
+  const TopTools_DataMapOfShapeListOfShape& aMSD = aGA.ShapesDetected();
+  TopTools_DataMapIteratorOfDataMapOfShapeListOfShape aItMSD;
+  aItMSD.Initialize(aMSD);
+  for (; aItMSD.More(); aItMSD.Next()) {
+    const TopoDS_Shape& aSx = aItMSD.Key();
+    const TopTools_ListOfShape& aLSD = aItMSD.Value();
+    TopTools_ListIteratorOfListOfShape anItLSD (aLSD);
+    bool isToGlue = false;
+    if (doGlueAllEdges && aSx.ShapeType() == TopAbs_EDGE) {
+      isToGlue = true;
+    }
+    else {
+      for (; anItLSD.More() && !isToGlue; anItLSD.Next()) {
+        if (theShapesList.Contains(anItLSD.Value())) {
+          isToGlue = true;
+        }
+      }
+    }
+    if (isToGlue) {
+      aMSG.Bind(aSx, aLSD);
+    }
+  }
+
+  // 4. Set shapes to glue. If the operator is absent, the whole gluing will be done
+  aGA.SetShapesToGlue(aMSG);
+
+  // 5. Gluing
+  aGA.Perform();
+  iErr = aGA.ErrorStatus();
+  if (iErr) {
+    switch (iErr) {
+    case 11:
+      Standard_Failure::Raise("GEOMAlgo_GlueDetector failed");
+      break;
+    case 13:
+    case 14:
+      Standard_Failure::Raise("PerformImagesToWork failed");
+      break;
+    default:
+      {
+        // description of all errors see in GEOMAlgo_Gluer2.cxx
+        TCollection_AsciiString aMsg ("Error in GEOMAlgo_Gluer2 with code ");
+        aMsg += TCollection_AsciiString(iErr);
+        Standard_Failure::Raise(aMsg.ToCString());
+        break;
+      }
+    }
+    return aRes;
+  }
+
+  Standard_Integer iWrn = aGA.WarningStatus();
+  if (iWrn) {
+    switch (iWrn) {
+    case 1:
+      MESSAGE("No shapes to glue");
+      break;
+    default:
+      // description of all warnings see in GEOMAlgo_Gluer2.cxx
+      MESSAGE("Warning in GEOMAlgo_Gluer2 with code " << iWrn);
+      break;
+    }
+  }
+
+  // 6. Result
+  aRes = aGA.Shape();
+
+  return aRes;
+}
 
 //=======================================================================
 //function : Execute
@@ -342,9 +696,13 @@ Standard_Integer GEOMImpl_GlueDriver::Execute(TFunction_Logbook& log) const
   Standard_Boolean aKeepNonSolids = aCI.GetKeepNonSolids();
 
   if (aType == GLUE_FACES) {
-    aShape = GlueFacesWithWarnings(aShapeBase, tol3d, aKeepNonSolids, aWrn);
+    //aShape = GlueFacesWithWarnings(aShapeBase, tol3d, aKeepNonSolids, aWrn);
+    aShape = GlueWithWarnings(aShapeBase, tol3d, TopAbs_FACE, aKeepNonSolids, aWrn);
   }
-  else { // aType == GLUE_FACES_BY_LIST
+  else if (aType == GLUE_EDGES) {
+    aShape = GlueWithWarnings(aShapeBase, tol3d, TopAbs_EDGE, aKeepNonSolids, aWrn);
+  }
+  else if (aType == GLUE_FACES_BY_LIST || aType == GLUE_EDGES_BY_LIST) {
     Handle(TColStd_HSequenceOfTransient) SF = aCI.GetFaces();
     TopTools_MapOfShape aFaces;
     int i=1;
@@ -361,7 +719,13 @@ Standard_Integer GEOMImpl_GlueDriver::Execute(TFunction_Logbook& log) const
       if(!aFaces.Contains(aFace))
 	aFaces.Add(aFace);
     }
-    aShape = GlueFacesByList(aShapeBase, tol3d, aKeepNonSolids, aFaces);
+
+    Standard_Boolean aGlueAllEdges = Standard_False;
+    if (aType == GLUE_FACES_BY_LIST)
+      aGlueAllEdges = aCI.GetGlueAllEdges();
+
+    //aShape = GlueFacesByList(aShapeBase, tol3d, aKeepNonSolids, aFaces);
+    aShape = GlueByList(aShapeBase, tol3d, aKeepNonSolids, aFaces, aGlueAllEdges);
   }
 
   if (aShape.IsNull()) return 0;

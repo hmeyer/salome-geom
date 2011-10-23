@@ -19,15 +19,13 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//
-//
+
+
 //  File   : Sketcher_Profile.cxx
 //  Author : Damien COQUERET
 //  Module : GEOM
 //  $Header:
-
-#include "utilities.h"
-
+//
 #include <Standard_Stream.hxx>
 
 #include <Sketcher_Profile.hxx>
@@ -51,6 +49,8 @@
 
 #include <TCollection_AsciiString.hxx>
 #include <TColStd_Array1OfAsciiString.hxx>
+
+#include "utilities.h"
 
 //=======================================================================
 // profile
@@ -78,6 +78,9 @@ Sketcher_Profile::Sketcher_Profile(const char* aCmd)
   first = Standard_True;
   stayfirst = face = close = Standard_False;
 
+  Standard_Integer reversed = 0;
+  Standard_Integer control_Tolerance = 0;
+
   TopoDS_Shape S;
   TopoDS_Vertex MP;
   BRepBuilderAPI_MakeWire MW;
@@ -87,7 +90,9 @@ Sketcher_Profile::Sketcher_Profile(const char* aCmd)
   Handle(Geom_Surface) Surface;
 
   myOK = Standard_False;
+  myError = 0;
 
+  //TCollection_AsciiString aCommand(CORBA::string_dup(aCmd));
   TCollection_AsciiString aCommand ((char*)aCmd);
   TCollection_AsciiString aToken = aCommand.Token(":", 1);
   int n = 0;
@@ -244,6 +249,108 @@ Sketcher_Profile::Sketcher_Profile(const char* aCmd)
             move = none;
           break;
         }
+      case 'A':                                // TAngential arc by end point   
+        { 
+          if (n1 != 3) goto badargs;
+          Standard_Real vx = a(1).RealValue();
+          Standard_Real vy = a(2).RealValue(); 
+          if (a(0) == "AA") {
+            vx -= x;
+            vy -= y;
+          }
+          Standard_Real det = dx * vy - dy * vx;
+          if ( Abs(det) > Precision::Confusion()) {
+            Standard_Real c = (dx * vx + dy * vy)                                            
+                              / Sqrt((dx * dx + dy * dy) * (vx * vx + vy * vy));                 // Cosine of alpha = arc of angle / 2 , alpha in [0,Pi]
+            radius = (vx * vx + vy * vy)* Sqrt(dx * dx + dy * dy)                                // radius = distance between start and end point / 2 * sin(alpha)  
+                     / (2.0 * det);	                                                             // radius is > 0 or < 0
+            if (Abs(radius) > Precision::Confusion()) {
+              angle = 2.0 * acos(c); 	                                                         // angle in [0,2Pi]  
+              move = circle;
+            }
+            else
+              move = none;
+            break;
+          } 
+          else
+            move = none;
+          break;
+        } 
+      case 'U':                                // Arc by end point and radiUs
+        { 
+          if (n1 != 5) goto badargs;
+          Standard_Real vx = a(1).RealValue();
+          Standard_Real vy = a(2).RealValue();
+          radius  = a(3).RealValue();
+          reversed = a(4).IntegerValue();
+          if (a(0) == "UU") {                 // Absolute
+            vx -= x;
+            vy -= y;
+          }
+          Standard_Real length = Sqrt(vx * vx + vy * vy);
+          if ( (4.0 - (vx * vx + vy * vy) / (radius * radius) >= 0.0 ) && (length > Precision::Confusion()) ) {
+            Standard_Real c = 0.5 * Sqrt(4.0 - (vx * vx + vy * vy) / (radius * radius));        // Cosine of alpha = arc angle / 2 , alpha in [0,Pi/2]
+            angle = 2.0 * acos(c); 	                                                            // angle in [0,Pi]
+            if ( reversed == 2 )
+              angle = angle - 2 * PI; 
+            dx =    0.5 * (  vy * 1.0/radius 
+                           + vx * Sqrt(4.0  / (vx * vx + vy * vy) - 1.0 / (radius * radius)));    
+            dy = -  0.5 * (  vx * 1.0/radius 
+                           - vy * Sqrt(4.0  / (vx * vx + vy * vy) - 1.0 / (radius * radius)));    
+            move = circle;
+          }
+          else{
+            move = none;
+          }
+          break;
+        }	 
+      case 'E':                                // Arc by end point and cEnter
+        { 
+          if (n1 != 7) goto badargs;
+          Standard_Real vx = a(1).RealValue();
+          Standard_Real vy = a(2).RealValue();
+          Standard_Real vxc  = a(3).RealValue();
+          Standard_Real vyc  = a(4).RealValue();
+          reversed = a(5).IntegerValue();
+          control_Tolerance = a(6).IntegerValue();
+
+          if (a(0) == "EE") {                 // Absolute
+            vx -= x;
+            vy -= y;
+            vxc -= x;
+            vyc -= y; 
+          }
+          radius = Sqrt( vxc * vxc + vyc * vyc );
+          Standard_Real det = vx * vyc - vy * vxc;
+          Standard_Real length = Sqrt(vx * vx + vy * vy);
+          Standard_Real length2 = Sqrt((vx-vxc) * (vx-vxc) + (vy-vyc) * (vy-vyc));
+          Standard_Real length3 = Sqrt(vxc * vxc + vyc * vyc);
+          Standard_Real error = Abs(length2 - radius);
+          myError = error;
+          if ( error > Precision::Confusion() ){
+            MESSAGE("Warning : The specified end point is not on the Arc, distance = "<<error);
+          }
+          if ( error > Precision::Confusion() && control_Tolerance == 1)                      // Don't create the arc if the end point 
+            move = none;                                                                      // is too far from it
+          else if ( (length > Precision::Confusion()) && 
+                    (length2 > Precision::Confusion()) && 
+                    (length3 > Precision::Confusion()) ) {
+            Standard_Real c = ( radius * radius - (vx * vxc + vy * vyc) ) 
+                            / ( radius * Sqrt((vx-vxc) * (vx-vxc) + (vy-vyc) * (vy-vyc)) ) ;  // Cosine of arc angle 
+            angle = acos(c);                                                                  // angle in [0,Pi] 
+            if ( reversed == 2 )
+              angle = angle - 2 * PI;
+            if (det < 0)
+              angle = -angle; 
+            dx =  vyc / radius;
+            dy = -vxc / radius; 
+            move = circle;
+          }
+          else {
+            move = none;
+          }
+          break;
+        }	
       case 'I':
         {
           if (n1 != 2) goto badargs;

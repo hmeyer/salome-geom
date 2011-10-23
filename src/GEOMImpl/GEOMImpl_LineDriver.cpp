@@ -27,6 +27,7 @@
 
 #include <BRep_Tool.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
 #include <BRepAlgoAPI_Section.hxx>
 
 #include <TopAbs.hxx>
@@ -89,45 +90,16 @@ Standard_Integer GEOMImpl_LineDriver::Execute(TFunction_Logbook& log) const
     if (aShape1.IsSame(aShape2)) {
       Standard_ConstructionError::Raise("The end points must be different");
     }
-    gp_Pnt P1 = BRep_Tool::Pnt(TopoDS::Vertex(aShape1));
-    gp_Pnt P2 = BRep_Tool::Pnt(TopoDS::Vertex(aShape2));
+    TopoDS_Vertex V1 = TopoDS::Vertex(aShape1);
+    TopoDS_Vertex V2 = TopoDS::Vertex(aShape2);
+    gp_Pnt P1 = BRep_Tool::Pnt(V1);
+    gp_Pnt P2 = BRep_Tool::Pnt(V2);
     if (P1.Distance(P2) < Precision::Confusion()) {
       Standard_ConstructionError::Raise("The end points are too close");
     }
-    aShape = BRepBuilderAPI_MakeEdge(P1, P2).Shape();
+    aShape = BRepBuilderAPI_MakeEdge(V1, V2).Shape();
 
-  } else if (aType == LINE_PNT_DIR) {
-    Handle(GEOM_Function) aRefPnt = aPI.GetPoint1();
-    Handle(GEOM_Function) aRefDir = aPI.GetPoint2();
-    TopoDS_Shape aShape1 = aRefPnt->GetValue();
-    TopoDS_Shape aShape2 = aRefDir->GetValue();
-    if (aShape1.ShapeType() != TopAbs_VERTEX) {
-      Standard_ConstructionError::Raise("Wrong first argument: must be point");
-    }
-    if (aShape2.ShapeType() != TopAbs_EDGE) {
-      Standard_ConstructionError::Raise("Wrong second argument: must be vector");
-    }
-    if (aShape1.IsSame(aShape2)) {
-      Standard_ConstructionError::Raise("The end points must be different");
-    }
-    gp_Pnt P1 = BRep_Tool::Pnt(TopoDS::Vertex(aShape1));
-
-    TopoDS_Edge anE = TopoDS::Edge(aShape2);
-    TopoDS_Vertex V1, V2;
-    TopExp::Vertices(anE, V1, V2, Standard_True);
-    if (V1.IsNull() || V2.IsNull()) {
-      Standard_NullObject::Raise("Line creation aborted: vector is not defined");
-    }
-    gp_Pnt PV1 = BRep_Tool::Pnt(V1);
-    gp_Pnt PV2 = BRep_Tool::Pnt(V2);
-    if (PV1.Distance(PV2) < Precision::Confusion()) {
-      Standard_ConstructionError::Raise("Vector with null magnitude");
-    }
-
-    gp_Pnt P2 (P1.XYZ() + PV2.XYZ() - PV1.XYZ());
-    aShape = BRepBuilderAPI_MakeEdge(P1, P2).Shape();
-  }
-  else if (aType == LINE_TWO_FACES) {
+  } else if (aType == LINE_TWO_FACES) {
     Handle(GEOM_Function) aRefFace1 = aPI.GetFace1();
     Handle(GEOM_Function) aRefFace2 = aPI.GetFace2();
     TopoDS_Shape aShape1 = aRefFace1->GetValue();
@@ -160,8 +132,44 @@ Standard_Integer GEOMImpl_LineDriver::Execute(TFunction_Logbook& log) const
 	if ( Exp.More() )
 	  aShape = E.Shape();
 	}
-  }
-  else {
+
+  } else if (aType == LINE_PNT_DIR) {
+    Handle(GEOM_Function) aRefPnt = aPI.GetPoint1();
+    Handle(GEOM_Function) aRefDir = aPI.GetPoint2();
+    TopoDS_Shape aShape1 = aRefPnt->GetValue();
+    TopoDS_Shape aShape2 = aRefDir->GetValue();
+    if (aShape1.ShapeType() != TopAbs_VERTEX) {
+      Standard_ConstructionError::Raise("Wrong first argument: must be point");
+    }
+    if (aShape2.ShapeType() != TopAbs_EDGE) {
+      Standard_ConstructionError::Raise("Wrong second argument: must be vector");
+    }
+    if (aShape1.IsSame(aShape2)) {
+      Standard_ConstructionError::Raise("The end points must be different");
+    }
+    TopoDS_Vertex Vstart = TopoDS::Vertex(aShape1);
+    gp_Pnt P1 = BRep_Tool::Pnt(Vstart);
+
+    TopoDS_Edge anE = TopoDS::Edge(aShape2);
+    TopoDS_Vertex V1, V2;
+    TopExp::Vertices(anE, V1, V2, Standard_True);
+    if (V1.IsNull() || V2.IsNull()) {
+      Standard_NullObject::Raise("Line creation aborted: vector is not defined");
+    }
+    gp_Pnt PV1 = BRep_Tool::Pnt(V1);
+    gp_Pnt PV2 = BRep_Tool::Pnt(V2);
+    if (PV1.Distance(PV2) < Precision::Confusion()) {
+      Standard_ConstructionError::Raise("Vector with null magnitude");
+    }
+    TopoDS_Vertex Vend;
+    if ( V1.IsSame( Vstart ) )
+      Vend = V2;
+    else if ( V2.IsSame( Vstart ) )
+      Vend = V1;
+    else
+      Vend = BRepBuilderAPI_MakeVertex( gp_Pnt(P1.XYZ() + PV2.XYZ() - PV1.XYZ()) );
+    aShape = BRepBuilderAPI_MakeEdge(Vstart, Vend).Shape();
+  } else {
   }
 
   if (aShape.IsNull()) return 0;

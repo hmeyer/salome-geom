@@ -58,12 +58,16 @@ SALOME_WNT_EXPORT
       IFSelect_ReturnStatus status ;
       //VRV: OCC 4.0 migration
       STEPControl_Writer aWriter;
+      //VSR: 16/09/09: Convert to METERS
       Interface_Static::SetCVal("xstep.cascade.unit","M");
+      Interface_Static::SetIVal("write.step.nonmanifold", 1);
       //JFA: PAL6162      status = aWriter.Transfer( theShape, STEPControl_ManifoldSolidBrep );
       status = aWriter.Transfer( theShape, STEPControl_AsIs );
       //VRV: OCC 4.0 migration
       if ( status == IFSelect_RetDone ) 
         status = aWriter.Write( theFileName.ToCString() ) ;
+
+      // Return previous locale
       if ( status == IFSelect_RetDone )
         return 1;
     }

@@ -70,7 +70,7 @@ static
 {
   myIsDone=Standard_False;
   //
-  char buf[32]={"SR"};
+  // char buf[32]={"SR"};
   Standard_Boolean bIsValid;
   Standard_Integer nV1, nV2, iErr;
   Standard_Real aT1, aT2;

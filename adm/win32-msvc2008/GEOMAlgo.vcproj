@@ -395,10 +395,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_Gluer1.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_HAlgo.cpp"
 				>
 			</File>
@@ -562,6 +558,50 @@
 				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_WireSplitter.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_DataMapIteratorOfDataMapOfOrientedShapeShape_0.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_DataMapNodeOfDataMapOfOrientedShapeShape_0.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_DataMapOfOrientedShapeShape_0.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_Tools_1.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_WESScaler.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_GlueDetector.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_Gluer2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_Gluer2_1.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_Gluer2_2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_Gluer2_3.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMAlgo\GEOMAlgo_GluerAlgo.cpp"
+				>
+			</File>	
 		</Filter>
 	</Files>
 	<Globals>

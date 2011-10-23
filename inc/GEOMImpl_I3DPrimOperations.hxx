@@ -74,17 +74,18 @@ class GEOMImpl_I3DPrimOperations : public GEOM_IOperations {
 										 const GEOM_Parameter& theVmax = 0., const GEOM_Parameter& theAngle = 0.);
 
   Standard_EXPORT Handle(GEOM_Object) MakePrismVecH (Handle(GEOM_Object) theBase,
-									 Handle(GEOM_Object) theVec, const GEOM_Parameter& theH);
+									 Handle(GEOM_Object) theVec, const GEOM_Parameter& theH, const GEOM_Parameter& theScaleFactor = -1.0);
 
   Standard_EXPORT Handle(GEOM_Object) MakePrismVecH2Ways (Handle(GEOM_Object) theBase,
 										Handle(GEOM_Object) theVec, const GEOM_Parameter& theH);
 
   Standard_EXPORT Handle(GEOM_Object) MakePrismTwoPnt (Handle(GEOM_Object) theBase,
                                        Handle(GEOM_Object) thePoint1,
-									   Handle(GEOM_Object) thePoint2);
+									   Handle(GEOM_Object) thePoint2, const GEOM_Parameter& theScaleFactor);
 
   Standard_EXPORT Handle(GEOM_Object) MakePrismVecHAng ( Handle(GEOM_Object) theBase,Handle(GEOM_Object) theVec,
-														 const GEOM_Parameter& theH, const GEOM_Parameter& theAng);
+														 const GEOM_Parameter& theH, const GEOM_Parameter& theAng,
+                                                         const GEOM_Parameter& theScaleFactor);
   
   Standard_EXPORT Handle(GEOM_Object) MakePrismTwoPnt2Ways (Handle(GEOM_Object) theBase,
                                        Handle(GEOM_Object) thePoint1,
