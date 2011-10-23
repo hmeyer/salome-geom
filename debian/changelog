@@ -1,3 +1,9 @@
+libsalome-geom (6.3.1.8-0ubuntu1) oneiric; urgency=low
+
+  * version bump
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Sun, 23 Oct 2011 22:35:16 +0200
+
 libsalome-geom (5.1.5.9-0ubuntu3) oneiric; urgency=low
 
   * oneiric upload 
