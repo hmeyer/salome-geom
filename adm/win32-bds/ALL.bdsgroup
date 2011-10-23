@@ -8,7 +8,11 @@
 			<Option Name="GUID">{0E365354-2D49-48ED-A780-5D11549D1A20}</Option>
 		</Option>
 	</PersonalityInfo>
-	<Default.Personality>  <Projects>
+	<Default.Personality>  
+    
+    <Projects>
+	  <Projects Name="ExchangeOBJ.dll">ExchangeOBJ.bdsproj</Projects>
+      <Projects Name="Exchange3DS.dll">Exchange3DS.bdsproj</Projects>
       <Projects Name="ExchangeBREP.dll">ExchangeBREP.bdsproj</Projects>
       <Projects Name="ExchangeSTEP.dll">ExchangeSTEP.bdsproj</Projects>
       <Projects Name="ExchangeIGES.dll">ExchangeIGES.bdsproj</Projects>
@@ -24,7 +28,7 @@
       <Projects Name="GEOMAlgo.dll">GEOMAlgo.bdsproj</Projects>
       <Projects Name="GEOM.dll">GEOM.bdsproj</Projects>
       <Projects Name="GEOMImpl.dll">GEOMImpl.bdsproj</Projects>
-      <Projects Name="Targets">ExchangeBREP.dll ExchangeSTEP.dll ExchangeIGES.dll ExchangeSTL.dll ExchangeVRML.dll ExchangeCSFDB.dll ShHealOper.dll Archimede.dll Partition.dll Sketcher.dll NMTDS.dll NMTTools.dll GEOMAlgo.dll GEOM.dll GEOMImpl.dll</Projects>
+      <Projects Name="Targets">ExchangeOBJ.dll Exchange3DS.dll ExchangeBREP.dll ExchangeSTEP.dll ExchangeIGES.dll ExchangeSTL.dll ExchangeVRML.dll ExchangeCSFDB.dll ShHealOper.dll Archimede.dll Partition.dll Sketcher.dll NMTDS.dll NMTTools.dll GEOMAlgo.dll GEOM.dll GEOMImpl.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

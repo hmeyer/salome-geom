@@ -94,7 +94,7 @@ static
 {
   myErrorStatus=0;
   //
-  const NMTDS_ShapesDataStructure& aDS=*myPaveFiller->DS();
+  /*const NMTDS_ShapesDataStructure& aDS=**/myPaveFiller->DS();
   NMTTools_PaveFiller* pPF=myPaveFiller;
   IntTools_Context& aCtx= pPF->ChangeContext();
   //
@@ -283,6 +283,9 @@ static
       else {
 	//aMS.Add(aShell);
 	TopExp::MapShapes(aShell, TopAbs_FACE, aMS);
+        //modified by NIZNHY-PKV Fri Dec 03 11:18:45 2010f
+        TopExp::MapShapes(aShell, TopAbs_EDGE, aMS);
+        //modified by NIZNHY-PKV Fri Dec 03 11:18:51 2010t
 	TopExp::MapShapesAndAncestors(aShell, TopAbs_EDGE, TopAbs_FACE, aMEF);
       }
     }
@@ -431,8 +434,6 @@ static
   GEOMAlgo_DataMapOfShapeShapeSet aMSS;
   GEOMAlgo_ShapeSet aSSi;
   //
-  //modified by NIZNHY-PKV Wed Dec  6 17:08:03 2006f
-  //
   // 0. Find same domain solids for non-interferred solids
   aNbS=aDS.NumberOfShapesOfTheObject();
   for (i=1; i<=aNbS; ++i) {
@@ -453,11 +454,9 @@ static
     aMSS.Bind(aS, aSSi);
   } //for (i=1; i<=aNbS; ++i) 
   //
-  //modified by NIZNHY-PKV Wed Dec  6 17:08:09 2006t
-  //
   // 1. Build solids for interferred source solids
-  //
   aSB.SetContext(aCtx);
+  aSB.ComputeInternalShapes(myComputeInternalShapes);
   aNbS=myDraftSolids.Extent();
   for (i=1; i<=aNbS; ++i) {
     const TopoDS_Shape& aS =myDraftSolids.FindKey(i);
@@ -515,6 +514,11 @@ static
     }
     const TopTools_ListOfShape& aSFS1=aSSi.GetSet();
     aNbSFS=aSFS1.Extent();
+    //modified by NIZNHY-PKV Wed Oct 27 09:53:15 2010f
+    if (!aNbSFS) {
+      continue;
+    }
+    //modified by NIZNHY-PKV Wed Oct 27 09:53:18 2010t
     //
     // 1.3 Build new solids
     aSB.SetShapes(aSFS1);
@@ -549,38 +553,6 @@ static
       myImages.Bind(aS, aLSR);
     }
   } // for (i=1; i<=aNbS; ++i) {
-  //modified by NIZNHY-PKV Wed Dec  6 17:07:47 2006f
-  /*
-  //
-  // 2. Find same domain solids for non-interferred solids
-  aNbS=aDS.NumberOfShapesOfTheObject();
-  for (i=1; i<=aNbS; ++i) {
-    const TopoDS_Shape& aS=aDS.Shape(i);
-    if (aS.ShapeType()!=TopAbs_SOLID) {
-      continue;
-    }
-    if (!aMFence.Add(aS)) {
-      continue;
-    }
-    if(myImages.HasImage(aS)) {
-      continue;
-    }
-    //
-    aSSi.Clear();
-    aSSi.Add(aS, TopAbs_FACE);
-    //
-    aItSS.Initialize(aMSS);
-    for (; aItSS.More(); aItSS.Next()) {
-      const TopoDS_Shape& aSR=aItSS.Key(); 
-      const GEOMAlgo_ShapeSet& aSSR=aItSS.Value();
-      if (aSSi.Contains(aSSR)) {
-	myImages.Bind(aS, aSR);
-	break;
-      }
-    }
-  } //for (i=1; i<=aNbS; ++i) 
-  */
-  //modified by NIZNHY-PKV Wed Dec  6 17:07:55 2006t
 }
 //=======================================================================
 //function :FillInternalShapes 

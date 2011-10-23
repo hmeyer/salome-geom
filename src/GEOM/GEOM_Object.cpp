@@ -331,13 +331,13 @@ const char* GEOM_Object::GetName()
  *  SetColor
  */
 //=============================================================================
-void GEOM_Object::SetColor(const Quantity_Color &theColor)
+void GEOM_Object::SetColor(const GEOM_Object::Color& theColor)
 {
   Handle(TDataStd_RealArray) anArray = new TDataStd_RealArray();
   anArray->Init( 1, 3 );
-  anArray->SetValue( 1, theColor.Red() );
-  anArray->SetValue( 2, theColor.Green() );
-  anArray->SetValue( 3, theColor.Blue() );
+  anArray->SetValue( 1, theColor.R );
+  anArray->SetValue( 2, theColor.G );
+  anArray->SetValue( 3, theColor.B );
 
   Handle(TDataStd_RealArray) anAttr =
     TDataStd_RealArray::Set(_label.FindChild(COLOR_LABEL), anArray->Lower(), anArray->Upper());
@@ -349,16 +349,15 @@ void GEOM_Object::SetColor(const Quantity_Color &theColor)
  *  GetColor
  */
 //=============================================================================
-Quantity_Color GEOM_Object::GetColor()
+GEOM_Object::Color GEOM_Object::GetColor()
 {
   Handle(TDataStd_RealArray) anArray;
   bool isFound = _label.FindChild(COLOR_LABEL).FindAttribute(TDataStd_RealArray::GetID(), anArray);
 
-  double R = isFound ? anArray->Value( 1 ) : -1.f;
-  double G = isFound ? anArray->Value( 2 ) : -1.f;
-  double B = isFound ? anArray->Value( 3 ) : -1.f;
-
-  Quantity_Color aColor(R, G, B, Quantity_TOC_RGB);
+  GEOM_Object::Color aColor;
+  aColor.R = isFound ? anArray->Value( 1 ) : -1;
+  aColor.G = isFound ? anArray->Value( 2 ) : -1;
+  aColor.B = isFound ? anArray->Value( 3 ) : -1;
 
   return aColor;
 }
@@ -383,7 +382,7 @@ bool GEOM_Object::GetAutoColor()
   Handle(TDataStd_Integer) anAutoColor;
   if(!_label.FindChild(AUTO_COLOR_LABEL).FindAttribute(TDataStd_Integer::GetID(), anAutoColor)) return false;
 
-  return anAutoColor->Get();
+  return bool(anAutoColor->Get());
 }
 
 //=============================================================================
@@ -560,7 +559,7 @@ Handle(GEOM_Function) GEOM_Object::AddFunction(const Standard_GUID& theGUID, int
   //update the dependencies.
   if (nb > 1) {
 
-	//Find all dependencies of this document
+	//Find all dependencies of this object
 	TDF_LabelSequence aSeq;
 	for (TDF_ChildIterator it(_label.Father()); it.More(); it.Next()) {
 	  TDF_Label currObjLabel = it.Value();

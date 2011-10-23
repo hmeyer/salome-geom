@@ -50,7 +50,7 @@ static
 //=======================================================================
   const TopTools_ListOfShape& GEOMAlgo_Builder::Generated(const TopoDS_Shape& theS)
 {
-  const NMTDS_ShapesDataStructure& aDS=*myPaveFiller->DS();
+  /*const NMTDS_ShapesDataStructure& aDS=**/myPaveFiller->DS();
   NMTTools_PaveFiller* pPF=myPaveFiller;
   IntTools_Context& aCtx=pPF->ChangeContext();
   //
@@ -105,7 +105,7 @@ static
 //=======================================================================
   const TopTools_ListOfShape& GEOMAlgo_Builder::Modified(const TopoDS_Shape& theS)
 {
-  const NMTDS_ShapesDataStructure& aDS=*myPaveFiller->DS();
+  /*const NMTDS_ShapesDataStructure& aDS=**/myPaveFiller->DS();
   NMTTools_PaveFiller* pPF=myPaveFiller;
   IntTools_Context& aCtx=pPF->ChangeContext();
   //

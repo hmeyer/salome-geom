@@ -24,12 +24,11 @@
 //  File   : Archimede_VolumeSection.cxx
 //  Author : Nicolas REJNERI
 //  Module : GEOM
-//  $Header: /home/server/cvs/GEOM/GEOM_SRC/src/ARCHIMEDE/Archimede_VolumeSection.cxx,v 1.8 2006/06/01 11:32:33 jfa Exp $
+//  $Header: /home/server/cvs/GEOM/GEOM_SRC/src/ARCHIMEDE/Archimede_VolumeSection.cxx,v 1.10.2.1.6.1.8.1 2011-06-01 13:56:53 vsr Exp $
+//
+#include "Archimede_VolumeSection.hxx"
 
 #include "utilities.h"
-#include <Standard_OStream.hxx>
-
-#include "Archimede_VolumeSection.hxx"
 
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <TopExp_Explorer.hxx>
@@ -41,14 +40,10 @@
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Shape.hxx>
 #include <math_Matrix.hxx>
-#include <math.h>
-#include <GC_MakePlane.hxx>
-#include <stdlib.h>
 #include <gp_Trsf.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Ax1.hxx>
 #include <gp_Pnt.hxx>
-#include <gp_Pln.hxx>
 
 #include <GeomAPI_ProjectPointOnSurf.hxx>
 #include <Geom_RectangularTrimmedSurface.hxx>

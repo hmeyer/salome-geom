@@ -44,6 +44,10 @@ class GEOMImpl_IBasicOperations : public GEOM_IOperations {
   Standard_EXPORT Handle(GEOM_Object) MakePointOnCurve (Handle(GEOM_Object) theCurve,
 										const GEOM_Parameter& theParameter);
 
+  Standard_EXPORT Handle(GEOM_Object) MakePointOnCurveByLength (Handle(GEOM_Object) theCurve,
+								const GEOM_Parameter& theLength,
+								Handle(GEOM_Object) theStartPoint);
+
   Standard_EXPORT Handle(GEOM_Object) MakePointOnCurveByCoord (Handle(GEOM_Object) theCurve,
                                                                const GEOM_Parameter& theXParam,
                                                                const GEOM_Parameter& theYParam,
@@ -137,6 +141,7 @@ class GEOMImpl_IBasicOperations : public GEOM_IOperations {
   { 
     PointOn_CurveByParam,
     PointOn_CurveByCoord,
+    PointOn_CurveByLength,   
     PointOn_SurfaceByParam,
     PointOn_SurfaceByCoord
   };
@@ -145,6 +150,7 @@ class GEOMImpl_IBasicOperations : public GEOM_IOperations {
                                        const GEOM_Parameter& theParam1,
                                        const GEOM_Parameter& theParam2,
                                        const GEOM_Parameter& theParam3,
-                                       const PointLocation theLocation);
+                                       const PointLocation theLocation,
+                                       Handle(GEOM_Object) theRefPoint = 0);
 };
 #endif

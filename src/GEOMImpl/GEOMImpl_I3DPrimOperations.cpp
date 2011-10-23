@@ -71,6 +71,8 @@
 #include <GEOMImpl_IFace.hxx>
 #include <GEOMImpl_IDisk.hxx>
 
+#include <Precision.hxx>
+
 #include <Standard_Failure.hxx>
 #include <Standard_ErrorHandler.hxx> // CAREFUL ! position of this file is critic : see Lucien PIGNOLONI / OCC
 
@@ -964,7 +966,8 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakeTorusPntVecRR
 //=============================================================================
 Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismVecH (Handle(GEOM_Object) theBase,
                                                                Handle(GEOM_Object) theVec,
-															   const GEOM_Parameter& theH)
+															   const GEOM_Parameter& theH,
+                                                               const GEOM_Parameter& theScaleFactor)
 {
   SetErrorCode(GEOM_KO);
 
@@ -990,7 +993,9 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismVecH (Handle(GEOM_Objec
 
   aCI.SetBase(aRefBase);
   aCI.SetVector(aRefVec);
+
   SETPARAM(aCI.SetH,theH);
+  SETPARAM(aCI.SetScale, theScaleFactor);
 
   //Compute the Prism value
   try {
@@ -1011,7 +1016,7 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismVecH (Handle(GEOM_Objec
 
   //Make a Python command
   GEOM::TPythonDump(aFunction) << aPrism << " = MakePrismVecH("
-	<< theBase << ", " << theVec << ", " << theH << ")";
+	<< theBase << ", " << theVec << ", " << theH << ", " << theScaleFactor << ")";
 
   SetErrorCode(GEOM_OK);
   return aPrism;
@@ -1084,8 +1089,8 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismVecH2Ways (Handle(GEOM_
  */
 //=============================================================================
 Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismTwoPnt
-       (Handle(GEOM_Object) theBase,
-        Handle(GEOM_Object) thePoint1, Handle(GEOM_Object) thePoint2)
+       (Handle(GEOM_Object) theBase, Handle(GEOM_Object) thePoint1,
+         Handle(GEOM_Object) thePoint2, const GEOM_Parameter& theScaleFactor)
 {
   SetErrorCode(GEOM_KO);
 
@@ -1114,6 +1119,8 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismTwoPnt
   aCI.SetFirstPoint(aRefPnt1);
   aCI.SetLastPoint(aRefPnt2);
 
+  SETPARAM(aCI.SetScale, theScaleFactor);
+
   //Compute the Prism value
   try {
 #if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
@@ -1133,7 +1140,7 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismTwoPnt
 
   //Make a Python command
   GEOM::TPythonDump(aFunction) << aPrism << " = MakePrismTwoPnt("
-    << theBase << ", " << thePoint1 << ", " << thePoint2 << ")";
+    << theBase << ", " << thePoint1 << ", " << thePoint2 << ", " << theScaleFactor << ")";
 
   SetErrorCode(GEOM_OK);
   return aPrism;
@@ -1147,7 +1154,8 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismTwoPnt
 Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismVecHAng (Handle(GEOM_Object) theBase,
 																  Handle(GEOM_Object) theVec,
 																  const GEOM_Parameter& theH,
-																  const GEOM_Parameter& theAng)
+																  const GEOM_Parameter& theAng,
+                                                                  const GEOM_Parameter& theScaleFactor)
 {
   SetErrorCode(GEOM_KO);
 
@@ -1176,6 +1184,8 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismVecHAng (Handle(GEOM_Ob
   SETPARAM(aCI.SetAngle,theAng);
   SETPARAM(aCI.SetH,theH);
 
+  SETPARAM(aCI.SetScale, theScaleFactor);
+
   //Compute the Prism value
   try {
 #if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
@@ -1194,7 +1204,7 @@ Handle(GEOM_Object) GEOMImpl_I3DPrimOperations::MakePrismVecHAng (Handle(GEOM_Ob
 
   //Make a Python command
   GEOM::TPythonDump(aFunction) << aPrism << " = MakePrismVecHAng("
-	<< theBase << ", " << theVec << ", " << theH << ", " << theAng<< ")";
+	<< theBase << ", " << theVec << ", " << theH << ", " << theAng << ", " << theScaleFactor << ")";
 
   SetErrorCode(GEOM_OK);
   return aPrism;

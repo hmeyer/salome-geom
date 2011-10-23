@@ -1,5 +1,5 @@
 # init the library collection
-AC_INIT([GEOM],[4.1.4.1]) 
+AC_INIT([GEOM],[5.1.5.9]) 
 
 # sanity check for source tree
 AC_CONFIG_SRCDIR(src/GEOMAlgo/GEOMAlgo_Algo.cpp)

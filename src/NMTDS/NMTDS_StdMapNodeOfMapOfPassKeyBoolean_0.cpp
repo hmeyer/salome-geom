@@ -88,10 +88,10 @@ const Handle(Standard_Type)& NMTDS_StdMapNodeOfMapOfPassKeyBoolean::DynamicType(
 #define TheKey_hxx <NMTDS_PassKeyBoolean.hxx>
 #define Hasher NMTDS_PassKeyMapHasher
 #define Hasher_hxx <NMTDS_PassKeyMapHasher.hxx>
-#define TCollection_StdMapNode NMTDS_StdMapNodeOfMapOfPassKeyBoolean
-#define TCollection_StdMapNode_hxx <NMTDS_StdMapNodeOfMapOfPassKeyBoolean.hxx>
 #define TCollection_MapIterator NMTDS_MapIteratorOfMapOfPassKeyBoolean
 #define TCollection_MapIterator_hxx <NMTDS_MapIteratorOfMapOfPassKeyBoolean.hxx>
+#define TCollection_StdMapNode NMTDS_StdMapNodeOfMapOfPassKeyBoolean
+#define TCollection_StdMapNode_hxx <NMTDS_StdMapNodeOfMapOfPassKeyBoolean.hxx>
 #define Handle_TCollection_StdMapNode Handle_NMTDS_StdMapNodeOfMapOfPassKeyBoolean
 #define TCollection_StdMapNode_Type_() NMTDS_StdMapNodeOfMapOfPassKeyBoolean_Type_()
 #define TCollection_Map NMTDS_MapOfPassKeyBoolean

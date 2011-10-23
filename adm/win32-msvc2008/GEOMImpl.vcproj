@@ -291,6 +291,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\GEOMImpl\GEOMImpl_Fillet1dDriver.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMImpl\GEOMImpl_Fillet1d.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\GEOMImpl\GEOMImpl_FillingDriver.cpp"
 				>
 			</File>
@@ -462,6 +470,18 @@
 				RelativePath="..\..\src\GEOMImpl\GEOMImpl_VectorDriver.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\GEOMImpl\GEOMImpl_IAdvancedOperations.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMImpl\GEOMImpl_PipeTShapeDriver.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\GEOMImpl\GEOMImpl_ProjectionDriver.cpp"
+				>
+			</File>			
 		</Filter>
 	</Files>
 	<Globals>

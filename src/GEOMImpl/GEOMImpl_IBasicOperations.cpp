@@ -192,7 +192,8 @@ Handle(GEOM_Object) GEOMImpl_IBasicOperations::makePointOnGeom
                      const GEOM_Parameter& theParam1,
                      const GEOM_Parameter& theParam2,
                      const GEOM_Parameter& theParam3,
-                     const PointLocation theLocation)
+                     const PointLocation theLocation,
+                     Handle(GEOM_Object) theRefPoint)
 {
   SetErrorCode(GEOM_KO);
 
@@ -206,6 +207,7 @@ Handle(GEOM_Object) GEOMImpl_IBasicOperations::makePointOnGeom
   switch( theLocation )
     {
     case PointOn_CurveByParam:   fType = POINT_CURVE_PAR; break;
+    case PointOn_CurveByLength:  fType = POINT_CURVE_LENGTH; break;
     case PointOn_CurveByCoord:   fType = POINT_CURVE_COORD; break;
     case PointOn_SurfaceByParam: fType = POINT_SURFACE_PAR; break;
     case PointOn_SurfaceByCoord: fType = POINT_SURFACE_COORD; break;
@@ -226,6 +228,14 @@ Handle(GEOM_Object) GEOMImpl_IBasicOperations::makePointOnGeom
     case PointOn_CurveByParam:
       aPI.SetCurve(aRefFunction);
       SETPARAM(aPI.SetParameter, theParam1);
+      break;
+    case PointOn_CurveByLength:
+      aPI.SetCurve(aRefFunction);
+      SETPARAM(aPI.SetLength, theParam1);
+      if (!theRefPoint.IsNull()) {
+        Handle(GEOM_Function) aRefPoint = theRefPoint->GetLastFunction();
+        aPI.SetRef(aRefPoint);
+      }
       break;
     case PointOn_CurveByCoord:
       aPI.SetCurve(aRefFunction);
@@ -268,6 +278,10 @@ Handle(GEOM_Object) GEOMImpl_IBasicOperations::makePointOnGeom
     case PointOn_CurveByParam:
       GEOM::TPythonDump(aFunction) << aPoint << " = MakeVertexOnCurve("
                                    << theGeomObj << ", " << theParam1 << ")";
+      break;
+    case PointOn_CurveByLength:
+      GEOM::TPythonDump(aFunction) << aPoint << " = MakeVertexOnCurveByLength("
+                                   << theGeomObj << ", " << theParam1 << ", " << theRefPoint <<  ")";
       break;
     case PointOn_CurveByCoord:
   GEOM::TPythonDump(aFunction) << aPoint << " = MakeVertexOnCurveByCoord("
@@ -313,6 +327,19 @@ Handle(GEOM_Object) GEOMImpl_IBasicOperations::MakePointOnCurveByCoord
                      const GEOM_Parameter& theZParam)
 {
   return makePointOnGeom(theCurve, theXParam, theYParam, theZParam, PointOn_CurveByCoord);
+}
+
+//=============================================================================
+/*!
+ *  MakePointOnCurveByLength 
+ */
+//=============================================================================
+Handle(GEOM_Object) GEOMImpl_IBasicOperations::MakePointOnCurveByLength
+                    (Handle(GEOM_Object) theCurve, 
+                     const GEOM_Parameter& theLength,
+                     Handle(GEOM_Object) theStartPoint)
+{
+  return makePointOnGeom(theCurve, theLength, 0.0, 0.0, PointOn_CurveByLength, theStartPoint);
 }
 
 //=============================================================================

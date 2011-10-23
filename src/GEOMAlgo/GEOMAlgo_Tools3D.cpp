@@ -1054,10 +1054,10 @@ void GetApproxNormalToFaceOnEdge (const TopoDS_Edge& aEx,
                                   Standard_Real aT, 
                                   gp_Pnt& aPF, 
                                   gp_Dir& aDNF,
-                                  IntTools_Context& )//aCtx)
+                                  IntTools_Context& aCtx)
 {
   Standard_Boolean bReverse;
-  Standard_Real aT1, aT2, dT;//, aU, aV;
+  Standard_Real aT1, aT2, dT, aU, aV;
   gp_Dir aDTT, aDNFT, aDBT;
   gp_Pnt aPFT, aPFx;
   Handle(Geom_Curve) aC3D;
@@ -1112,6 +1112,19 @@ void GetApproxNormalToFaceOnEdge (const TopoDS_Edge& aEx,
         dT=dR;
       }
     }
+    //modified by NIZNHY-PKV Thu Dec 02 10:39:09 2010f
+    else if (GeomAbs_Torus ||
+             aTS==GeomAbs_Cylinder){
+      Standard_Real aTolEx, aTolFx, aTol;
+      //
+      aTolEx=BRep_Tool::Tolerance(aEx);
+      aTolFx=BRep_Tool::Tolerance(aFx);
+      aTol=2.*aTolEx+aTolFx;
+      if (aTol>dT) {
+        dT=aTol;
+      }
+    }
+    //modified by NIZNHY-PKV Thu Dec 02 10:39:13 2010t
   }
   //----------------------------------------------
   //
@@ -1123,8 +1136,6 @@ void GetApproxNormalToFaceOnEdge (const TopoDS_Edge& aEx,
     aDNF.Reverse();
   }
   //
-  //modified by NIZNHY-PKV Wed Sep 22 10:52:54 2010f
-  /*
   GeomAPI_ProjectPointOnSurf& aProjector=aCtx.ProjPS(aF);
   //
   aProjector.Perform(aPFx);
@@ -1136,6 +1147,4 @@ void GetApproxNormalToFaceOnEdge (const TopoDS_Edge& aEx,
       aDNF.Reverse();
     }
   }
-  */
-  //modified by NIZNHY-PKV Wed Sep 22 10:52:59 2010t
 }

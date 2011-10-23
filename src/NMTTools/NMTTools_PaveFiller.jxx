@@ -94,6 +94,9 @@
 #ifndef _TopTools_DataMapOfShapeShape_HeaderFile
 #include <TopTools_DataMapOfShapeShape.hxx>
 #endif
+#ifndef _TColStd_MapOfInteger_HeaderFile
+#include <TColStd_MapOfInteger.hxx>
+#endif
 #ifndef _NMTTools_PaveFiller_HeaderFile
 #include <NMTTools_PaveFiller.hxx>
 #endif

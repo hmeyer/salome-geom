@@ -34,6 +34,7 @@
 #include <GEOMImpl_IBlockTrsf.hxx>
 #include <GEOMImpl_CopyDriver.hxx>
 #include <GEOMImpl_Block6Explorer.hxx>
+#include <GEOMImpl_IShapesOperations.hxx>
 
 #include <GEOM_Function.hxx>
 #include <GEOM_PythonDump.hxx>
@@ -1543,7 +1544,7 @@ Handle(GEOM_Object) GEOMImpl_IBlocksOperations::GetShapesNearPoint
                                          (Handle(GEOM_Object)    theShape,
                                           Handle(GEOM_Object)    thePoint,
                                           const Standard_Integer theShapeType,
-                                          const Standard_Real    theTolerance)
+                                          const Standard_Real    theConstTolerance)
 {
   SetErrorCode(GEOM_KO);
 
@@ -1574,8 +1575,9 @@ Handle(GEOM_Object) GEOMImpl_IBlocksOperations::GetShapesNearPoint
     return NULL;
   }
 
+  Standard_Real theTolerance = theConstTolerance;
   if (theTolerance < Precision::Confusion()) {
-    theTolerance == Precision::Confusion();
+    theTolerance = Precision::Confusion();
   }
 
   // Compute the result
@@ -3285,6 +3287,10 @@ Handle(TColStd_HSequenceOfTransient) GEOMImpl_IBlocksOperations::Propagate
   TopTools_MapOfShape mapAcceptedEdges;
   TCollection_AsciiString aListRes, anEntry;
 
+  // Sort shapes in current chain (Mantis issue 21053)
+  TopTools_DataMapOfShapeListOfShape aMapChains;
+  TopTools_ListOfShape aFirstInChains;
+
   for (ie = 1; ie <= nbEdges; ie++) {
     TopoDS_Shape curE = MEW.FindKey(ie);
 
@@ -3344,6 +3350,21 @@ Handle(TColStd_HSequenceOfTransient) GEOMImpl_IBlocksOperations::Propagate
 
       listPrevEdges = listCurEdges;
     } // while (listPrevEdges.Extent() > 0)
+
+    // Sort shapes in current chain (Mantis issue 21053)
+    GEOMImpl_IShapesOperations::SortShapes(currentChain, Standard_False);
+    aFirstInChains.Append(currentChain.First());
+    aMapChains.Bind(currentChain.First(), currentChain);
+  }
+
+  // Sort chains (Mantis issue 21053)
+  GEOMImpl_IShapesOperations::SortShapes(aFirstInChains, Standard_False);
+
+  // Store sorted chains in the document
+  TopTools_ListIteratorOfListOfShape aChainsIt (aFirstInChains);
+  for (; aChainsIt.More(); aChainsIt.Next()) {
+    TopoDS_Shape aFirstInChain = aChainsIt.Value();
+    const TopTools_ListOfShape& currentChain = aMapChains.Find(aFirstInChain);
 
     // Store the chain in the document
     Handle(TColStd_HArray1OfInteger) anArray =

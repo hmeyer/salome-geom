@@ -109,7 +109,7 @@ TopAbs_State GEOMAlgo_FinderShapeOnQuad::GetPointState(const gp_Pnt& aP)
   // In the case of concave quadrangle, return IN if
   // aP is OUT of only one concave side
   double nbIn = 0.;
-  for ( unsigned int i = 0; i < myPlanes.size(); ++i )
+  for ( int i = 0; i < myPlanes.size(); ++i )
   {
     TopAbs_State aSt;
     GEOMAlgo_SurfaceTools::GetState(aP, myPlanes[i], myTolerance, aSt);

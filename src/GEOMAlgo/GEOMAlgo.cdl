@@ -130,6 +130,13 @@ is
     --  gluer    	     
     class Gluer; 
     class Gluer1;  
+ 
+--modified by NIZNHY-PKV Mon Feb 21 10:07:22 2011f  
+    imported Gluer2 from GEOMAlgo;   
+    imported GlueDetector from GEOMAlgo; 
+    imported GluerAlgo from GEOMAlgo;  
+--modified by NIZNHY-PKV Mon Feb 21 10:07:27 2011t     
+ 
     class GlueAnalyser;  
     
     class CoupleOfShapes; 

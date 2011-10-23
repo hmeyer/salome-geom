@@ -66,7 +66,7 @@
         <property category="win32.Debug_Build.win32b.ilink32" name="option.I.arg.merge" value="0"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.I.enabled" value="0"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.L.arg.1" value="$(BDS)\lib\debug"/>
-        <property category="win32.Debug_Build.win32b.ilink32" name="option.L.arg.2" value="$(CASROOT)\win32\libd"/>
+        <property category="win32.Debug_Build.win32b.ilink32" name="option.L.arg.2" value="$(CASROOT)\win32\bds10\libd"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.L.arg.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.L.enabled" value="1"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.j.arg.1" value="..\..\win32\objd-bds"/>
@@ -100,7 +100,7 @@
         <property category="win32.Release_Build.win32b.ilink32" name="option.I.arg.merge" value="0"/>
         <property category="win32.Release_Build.win32b.ilink32" name="option.I.enabled" value="0"/>
         <property category="win32.Release_Build.win32b.ilink32" name="option.L.arg.1" value="$(BDS)\lib\release"/>
-        <property category="win32.Release_Build.win32b.ilink32" name="option.L.arg.2" value="$(CASROOT)\win32\lib"/>
+        <property category="win32.Release_Build.win32b.ilink32" name="option.L.arg.2" value="$(CASROOT)\win32\bds10\lib"/>
         <property category="win32.Release_Build.win32b.ilink32" name="option.L.arg.merge" value="1"/>
         <property category="win32.Release_Build.win32b.ilink32" name="option.L.enabled" value="1"/>
         <property category="win32.Release_Build.win32b.ilink32" name="option.j.arg.1" value="..\..\win32\obj-bds"/>
@@ -250,22 +250,20 @@
       <FILELIST>
         <FILE FILENAME="ExchangeIGES.bpf" CONTAINERID="BPF" LOCALCOMMAND="" UNITNAME="ExchangeIGES" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\src\ExchangeIges\ExchangeIGES_Export.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ExchangeIGES_Export" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\BinLPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="BinLPlugin" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\BinPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="BinPlugin" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\BinXCAFPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="BinXCAFPlugin" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\FWOSPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="FWOSPlugin" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\PTKernel.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="PTKernel" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\StdLPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="StdLPlugin" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\StdPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="StdPlugin" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKAdvTools.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKAdvTools" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKBin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKBin" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKBinL.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKBinL" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKBinTObj.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKBinTObj" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKBinXCAF.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKBinXCAF" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKBO.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKBO" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKBool.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKBool" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKBRep.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKBRep" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKCAF.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKCAF" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKCDF.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKCDF" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKDCAF.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKDCAF" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKDraw.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKDraw" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKernel.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKernel" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKFeat.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKFeat" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKFillet.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKFillet" FORMNAME="" DESIGNCLASS=""/>
@@ -279,6 +277,7 @@
         <FILE FILENAME="lib_cascade\TKMath.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKMath" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKMesh.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKMesh" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKMeshVS.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKMeshVS" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKNIS.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKNIS" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKOffset.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKOffset" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKOpenGl.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKOpenGl" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKPCAF.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKPCAF" FORMNAME="" DESIGNCLASS=""/>
@@ -290,27 +289,30 @@
         <FILE FILENAME="lib_cascade\TKShHealing.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKShHealing" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKStdLSchema.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKStdLSchema" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKStdSchema.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKStdSchema" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\TKSTEP209.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKSTEP209" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKSTEP.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKSTEP" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKSTEP209.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKSTEP209" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKSTEPAttr.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKSTEPAttr" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKSTEPBase.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKSTEPBase" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKSTL.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKSTL" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKTObj.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKTObj" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKTopAlgo.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKTopAlgo" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKTopTest.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKTopTest" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKV2d.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKV2d" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKV3d.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKV3d" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKViewerTest.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKViewerTest" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKVRML.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKVRML" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXCAF.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXCAF" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXCAFSchema.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXCAFSchema" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKXDEDRAW.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXDEDRAW" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXDEIGES.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXDEIGES" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXDESTEP.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXDESTEP" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKXMesh.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXMesh" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXml.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXml" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXmlL.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXmlL" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKXmlTObj.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXmlTObj" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXmlXCAF.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXmlXCAF" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="lib_cascade\TKXSBase.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXSBase" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\XCAFPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="XCAFPlugin" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\XmlLPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="XmlLPlugin" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\XmlPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="XmlPlugin" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="lib_cascade\XmlXCAFPlugin.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="XmlXCAFPlugin" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="lib_cascade\TKXSDRAW.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="TKXSDRAW" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\src\ExchangeIges\ExchangeIGES_Import.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ExchangeIGES_Import" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>

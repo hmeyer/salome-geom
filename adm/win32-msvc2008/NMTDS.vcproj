@@ -363,6 +363,22 @@
 				RelativePath="..\..\src\NMTDS\NMTDS_Tools.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\NMTDS\NMTDS_BndSphere.cpp.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\NMTDS\NMTDS_BndSphereTree.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\NMTDS\NMTDS_IndexedDataMapNodeOfIndexedDataMapOfShapeBndSphere_0.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\NMTDS\NMTDS_IndexedDataMapOfShapeBndSphere_0.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

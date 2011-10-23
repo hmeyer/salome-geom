@@ -31,6 +31,7 @@
 #define PRISM_ARG_DX    7
 #define PRISM_ARG_DY    8
 #define PRISM_ARG_DZ    9
+#define PRISM_ARG_SCALE 10
 
 class GEOMImpl_IPrism
 {
@@ -70,6 +71,10 @@ class GEOMImpl_IPrism
   double GetDY() { return _func->GetReal(PRISM_ARG_DY); }
   double GetDZ() { return _func->GetReal(PRISM_ARG_DZ); }
 
+  void SetScale(double theH) { _func->SetReal(PRISM_ARG_SCALE, theH); }
+  void SetScale(const TCollection_AsciiString& theH) { _func->SetReal(PRISM_ARG_SCALE, theH); }
+
+  double GetScale() { return _func->GetReal(PRISM_ARG_SCALE); }
 
  private:
 

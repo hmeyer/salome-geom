@@ -28,11 +28,9 @@
 #include <GEOMImpl_IPipeShellSect.hxx>
 #include <GEOMImpl_IPipeBiNormal.hxx>
 #include <GEOMImpl_IPipe.hxx>
+#include <GEOMImpl_GlueDriver.hxx>
 #include <GEOMImpl_Types.hxx>
 #include <GEOM_Function.hxx>
-
-//#include <GEOMAlgo_GlueAnalyser.hxx>
-#include <GEOMImpl_GlueDriver.hxx>
 
 #include <ShapeAnalysis_FreeBounds.hxx>
 #include <ShapeAnalysis_Edge.hxx>
@@ -67,6 +65,7 @@
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Compound.hxx>
 #include <TopTools_SequenceOfShape.hxx>
+#include <TopTools_HSequenceOfShape.hxx>
 #include <TopTools_IndexedDataMapOfShapeShape.hxx>
 #include <TopTools_IndexedDataMapOfShapeListOfShape.hxx>
 #include <TopTools_ListIteratorOfListOfShape.hxx>
@@ -624,45 +623,38 @@ static void FindFirstPairFaces(const TopoDS_Shape& S1, const TopoDS_Shape& S2,
 
 
 //=======================================================================
-//function : CreatePipeForDifferentSections
+//function : CreatePipeWithDifferentSections
 //purpose  : auxilary for Execute()
 //=======================================================================
-static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
-                                                   GEOMImpl_IPipe* aCI)
+TopoDS_Shape GEOMImpl_PipeDriver::CreatePipeWithDifferentSections
+                                  (const TopoDS_Wire& theWirePath,
+                                   const Handle(TopTools_HSequenceOfShape) theHSeqBases,
+                                   const Handle(TopTools_HSequenceOfShape) theHSeqLocs,
+                                   const Standard_Boolean theWithContact,
+                                   const Standard_Boolean theWithCorrect)
 {
   TopoDS_Shape aShape;
 
-  GEOMImpl_IPipeDiffSect* aCIDS = (GEOMImpl_IPipeDiffSect*)aCI;
-  //GEOMImpl_IPipeDiffSect* aCIDS = static_cast<GEOMImpl_IPipeDiffSect*>(aCI);
-  //BRepOffsetAPI_MakePipeShell aBuilder(aWirePath);
-  Handle(TColStd_HSequenceOfTransient) aBasesObjs = aCIDS->GetBases ();
-  Handle(TColStd_HSequenceOfTransient) aLocObjs = aCIDS->GetLocations ();
-  Standard_Boolean aWithContact = (aCIDS->GetWithContactMode());
-  Standard_Boolean aWithCorrect = (aCIDS->GetWithCorrectionMode());
+  TopoDS_Wire aWirePath = theWirePath;
 
-  Standard_Integer i =1, nbBases = aBasesObjs->Length(),
-    nbLocs = (aLocObjs.IsNull() ? 0 :aLocObjs->Length());
+  Standard_Integer nbBases = theHSeqBases->Length();
+  Standard_Integer nbLocs = (theHSeqLocs.IsNull() ? 0 : theHSeqLocs->Length());
 
   if(nbLocs && nbLocs != nbBases) {
-    if(aCI) delete aCI;
     Standard_ConstructionError::Raise("Number of sections is not equal to number of locations ");
   }
   TopTools_SequenceOfShape aSeqBases;
   TopTools_SequenceOfShape aSeqLocs;
   TopTools_SequenceOfShape aSeqFaces;
-  for( ; i <= nbBases; i++) {
-    Handle(Standard_Transient) anItem = aBasesObjs->Value(i);
-    if(anItem.IsNull())
-      continue;
-    Handle(GEOM_Function) aRefBase = Handle(GEOM_Function)::DownCast(anItem);
-    if(aRefBase.IsNull())
-      continue;
-    if(aRefBase->GetValue().IsNull())
+
+  Standard_Integer i = 1;
+  for (i = 1; i <= nbBases; i++) {
+    if (theHSeqBases->Value(i).IsNull())
       continue;
 
     // Make copy to prevent modifying of base object 0020766 : EDF 1320
     TopoDS_Shape aShapeBase;
-    BRepBuilderAPI_Copy Copy(aRefBase->GetValue());
+    BRepBuilderAPI_Copy Copy (theHSeqBases->Value(i));
     if( Copy.IsDone() )
       aShapeBase = Copy.Shape();
 
@@ -685,7 +677,6 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
       }
       if(NbWires!=1) {
         // bad case
-        if(aCI) delete aCI;
         Standard_ConstructionError::Raise("Bad shell is used as section ");
       }
       NeedCreateSolid = Standard_True;
@@ -697,8 +688,7 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
       //for case one path should be used other type function
       aSeqFaces.Append(aShapeBase);
       TopExp_Explorer aExpW(aShapeBase,TopAbs_WIRE);
-      for( ; aExpW.More(); aExpW.Next())
-      {
+      for (; aExpW.More(); aExpW.Next()) {
         TopoDS_Shape aWireProf = aExpW.Current();
         aSeqBases.Append(aWireProf);
       }
@@ -712,11 +702,7 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
       aSeqBases.Append(aWireProf);
     }
     if(nbLocs) {
-      Handle(Standard_Transient) anItemLoc = aLocObjs->Value(i);
-      if(anItemLoc.IsNull())
-        continue;
-      Handle(GEOM_Function) aRefLoc = Handle(GEOM_Function)::DownCast(anItemLoc);
-      TopoDS_Shape aShapeLoc = aRefLoc->GetValue();
+      TopoDS_Shape aShapeLoc = theHSeqLocs->Value(i);
       if(aShapeLoc.IsNull() || aShapeLoc.ShapeType() != TopAbs_VERTEX)
         continue;
       aSeqLocs.Append(aShapeLoc);
@@ -727,10 +713,6 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
 
   // skl 02.05.2007
   TopTools_SequenceOfShape Edges;
-  TopExp_Explorer anExp;
-  for ( anExp.Init( aWirePath, TopAbs_EDGE ); anExp.More(); anExp.Next() ) {
-      Edges.Append(anExp.Current());
-  }
 
   if(nbLocs>0) {
     // we have to check that each location shape is a vertex from
@@ -740,7 +722,11 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
       TopoDS_Vertex V = TopoDS::Vertex(aSeqLocs.Value(i));
       PLocs.Append(BRep_Tool::Pnt(V));
     }
-
+    //TopTools_SequenceOfShape Edges;
+    TopExp_Explorer anExp;
+    for (anExp.Init(aWirePath, TopAbs_EDGE); anExp.More(); anExp.Next()) {
+      Edges.Append(anExp.Current());
+    }
     int nbEdges = Edges.Length();
     ShapeAnalysis_Edge sae;
     TopoDS_Edge edge = TopoDS::Edge(Edges.First());
@@ -784,10 +770,10 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
         // find distance between E and aLocs(jcurr)
         double fp,lp;
         Handle(Geom_Curve) C = BRep_Tool::Curve(E,fp,lp);
-        GeomAPI_ProjectPointOnCurve PPC (PLocs.Value(jcurr),C);
-        if( PPC.NbPoints()>0 &&
-            PLocs.Value(jcurr).Distance(PPC.Point(1)) < tol ) {
-          double param = PPC.Parameter(1);
+        GeomAPI_ProjectPointOnCurve PPCurve (PLocs.Value(jcurr),C);
+        if (PPCurve.NbPoints()>0 &&
+            PLocs.Value(jcurr).Distance(PPCurve.Point(1)) < tol) {
+          double param = PPCurve.Parameter(1);
           gp_Pnt PC1;
           C->D0(param,PC1);
           // split current edge
@@ -880,8 +866,6 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
     P1 = P2;
   }
 
-  //cout<<"SplitEdgeNums.Length()="<<SplitEdgeNums.Length()<<endl;
-  //cout<<"SplitLocNums.Length()="<<SplitLocNums.Length()<<endl;
   if( SplitLocNums.Length()==SplitEdgeNums.Length() && SplitEdgeNums.Length()>0 ) {
     TopTools_SequenceOfShape aSeqRes;
     int nn, num1 = 1, num2 = 1;
@@ -907,10 +891,9 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
       for(i=1; i<=nbShapes; i++) {
         TopoDS_Shape aShapeLoc = aTmpSeqLocs.Value(i);
         TopoDS_Vertex aVert = TopoDS::Vertex(aShapeLoc);
-        aBuilder.Add(aTmpSeqBases.Value(i), aVert, aWithContact, aWithCorrect);
+          aBuilder.Add(aTmpSeqBases.Value(i), aVert, theWithContact, theWithCorrect);
       }
       if(!aBuilder.IsReady()) {
-        if(aCI) delete aCI;
         Standard_ConstructionError::Raise("Invalid input data for building PIPE: bases are invalid");
       }
       aBuilder.Build();
@@ -936,10 +919,9 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
     for(i=1; i<=nbShapes; i++) {
       TopoDS_Shape aShapeLoc = aTmpSeqLocs.Value(i);
       TopoDS_Vertex aVert = TopoDS::Vertex(aShapeLoc);
-      aBuilder.Add(aTmpSeqBases.Value(i), aVert, aWithContact, aWithCorrect);
+        aBuilder.Add(aTmpSeqBases.Value(i), aVert, theWithContact, theWithCorrect);
     }
     if(!aBuilder.IsReady()) {
-      if(aCI) delete aCI;
       Standard_ConstructionError::Raise("Invalid input data for building PIPE: bases are invalid");
     }
     aBuilder.Build();
@@ -965,7 +947,6 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
     Standard_Integer step = nbShapes/nbBases;
 
     if(nbShapes < nbBases || fmod((double)nbShapes, (double)nbBases)) {
-      if(aCI) delete aCI;
       Standard_ConstructionError::Raise("Invalid sections were specified for building pipe");
     }
     Standard_Integer ind =0;
@@ -979,13 +960,12 @@ static TopoDS_Shape CreatePipeForDifferentSections(TopoDS_Wire& aWirePath,
         if(nbLocs) {
           TopoDS_Shape aShapeLoc = aSeqLocs.Value(j);
           TopoDS_Vertex aVert = TopoDS::Vertex(aShapeLoc);
-          aBuilder.Add(aWireProf,aVert,aWithContact,aWithCorrect);
+            aBuilder.Add(aWireProf, aVert, theWithContact, theWithCorrect);
         }
         else
-          aBuilder.Add(aWireProf,aWithContact,aWithCorrect);
+            aBuilder.Add(aWireProf, theWithContact, theWithCorrect);
       }
     if(!aBuilder.IsReady()) {
-      if(aCI) delete aCI;
       Standard_ConstructionError::Raise("Invalid input data for building PIPE: bases are invalid");
     }
     aBuilder.Build();
@@ -1159,10 +1139,10 @@ static TopoDS_Shape CreatePipeForShellSections(const TopoDS_Wire& aWirePath,
         // find distance between E and aLocs(jcurr)
         double fp,lp;
         Handle(Geom_Curve) C = BRep_Tool::Curve(E,fp,lp);
-        GeomAPI_ProjectPointOnCurve PPC (PLocs.Value(jcurr),C);
-        if( PPC.NbPoints()>0 &&
-            PLocs.Value(jcurr).Distance(PPC.Point(1)) < tol ) {
-          double param = PPC.Parameter(1);
+        GeomAPI_ProjectPointOnCurve PPCurve (PLocs.Value(jcurr),C);
+        if (PPCurve.NbPoints()>0 &&
+            PLocs.Value(jcurr).Distance(PPCurve.Point(1)) < tol) {
+          double param = PPCurve.Parameter(1);
           gp_Pnt PC1;
           C->D0(param,PC1);
           // split current edge
@@ -2523,7 +2503,49 @@ Standard_Integer GEOMImpl_PipeDriver::Execute(TFunction_Logbook& log) const
 
   //building pipe with different sections
   else if (aType == PIPE_DIFFERENT_SECTIONS) {
-    aShape = CreatePipeForDifferentSections(aWirePath, aCI);
+  
+    GEOMImpl_IPipeDiffSect* aCIDS = (GEOMImpl_IPipeDiffSect*)aCI;
+    Handle(TColStd_HSequenceOfTransient) aBasesObjs = aCIDS->GetBases ();
+    Handle(TColStd_HSequenceOfTransient) aLocObjs = aCIDS->GetLocations ();
+    Standard_Boolean aWithContact = (aCIDS->GetWithContactMode());
+    Standard_Boolean aWithCorrect = (aCIDS->GetWithCorrectionMode());
+    if (aCI) {
+      delete aCI;
+      aCI = 0;
+    }
+
+    Standard_Integer nbBases = aBasesObjs->Length();
+    Standard_Integer nbLocs  = (aLocObjs.IsNull() ? 0 : aLocObjs->Length());
+
+    Handle(TopTools_HSequenceOfShape) aHSeqBases = new TopTools_HSequenceOfShape;
+    Handle(TopTools_HSequenceOfShape) aHSeqLocs  = new TopTools_HSequenceOfShape;
+    Standard_Integer i;
+
+    for (i = 1; i <= nbBases; i++) {
+      Handle(Standard_Transient) anItem = aBasesObjs->Value(i);
+      if (anItem.IsNull())
+        continue;
+      Handle(GEOM_Function) aRefBase = Handle(GEOM_Function)::DownCast(anItem);
+      if (aRefBase.IsNull())
+        continue;
+      if (aRefBase->GetValue().IsNull())
+        continue;
+
+      aHSeqBases->Append(aRefBase->GetValue());
+    }
+    for (i = 1; i <= nbLocs; i++) {
+      Handle(Standard_Transient) anItemLoc = aLocObjs->Value(i);
+      if (anItemLoc.IsNull())
+        continue;
+      Handle(GEOM_Function) aRefLoc = Handle(GEOM_Function)::DownCast(anItemLoc);
+      TopoDS_Shape aShapeLoc = aRefLoc->GetValue();
+      if (aShapeLoc.IsNull() || aShapeLoc.ShapeType() != TopAbs_VERTEX)
+        continue;
+
+      aHSeqLocs->Append(aShapeLoc);
+    }
+
+    aShape = CreatePipeWithDifferentSections(aWirePath, aHSeqBases, aHSeqLocs, aWithContact, aWithCorrect);
   }
 
   //building pipe with shell sections

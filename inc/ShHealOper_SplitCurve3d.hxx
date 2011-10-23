@@ -40,6 +40,7 @@ class ShHealOper_SplitCurve3d : public ShapeUpgrade_SplitCurve3d
 
   //! Empty constructor
   Standard_EXPORT ShHealOper_SplitCurve3d () : ShapeUpgrade_SplitCurve3d() {}
+  // Empty constructor
 
   Standard_EXPORT virtual void Compute();
   

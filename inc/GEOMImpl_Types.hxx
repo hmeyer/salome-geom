@@ -101,6 +101,8 @@
 
 #define GEOM_FILLET_1D 50
 
+#define GEOM_PROJECTION 51
+
 
 //GEOM_Function types
 
@@ -117,6 +119,7 @@
 #define POINT_SURFACE_PAR        5
 #define POINT_CURVE_COORD        6
 #define POINT_SURFACE_COORD      7
+#define POINT_CURVE_LENGTH       8
 
 #define VECTOR_TWO_PNT  1
 #define VECTOR_DX_DY_DZ 2
@@ -165,6 +168,8 @@
 #define OFFSET_SHAPE_COPY 			2
 #define OFFSET_SHAPE_PLANAR 		3
 #define OFFSET_SHAPE_COPY_PLANAR 	4
+
+#define PROJECTION_COPY 1
 
 #define SCALE_SHAPE             1
 #define SCALE_SHAPE_COPY        2
@@ -273,6 +278,7 @@
 #define FACE_WIRES          9
 #define REVERSE_ORIENTATION 10
 #define EDGE_WIRE           11
+#define EDGE_CURVE_LENGTH   12
 
 #define ARCHIMEDE_TYPE 1
 
@@ -289,8 +295,10 @@
 
 #define BASIC_FILLING 1
 
-#define GLUE_FACES 1
+#define GLUE_FACES         1
 #define GLUE_FACES_BY_LIST 2
+#define GLUE_EDGES         3
+#define GLUE_EDGES_BY_LIST 4
 
 #define SKETCHER_NINE_DOUBLS 1
 #define SKETCHER_PLANE 2
@@ -300,6 +308,10 @@
 #define GROUP_FUNCTION 1
 
 #define SHAPES_ON_SHAPE 1
+
+//Curve constructor type
+#define POINT_CONSTRUCTOR 0
+#define COORD_CONSTRUCTOR 1
 
 // Blocks
 #define BLOCK_FACE_FOUR_PNT       1

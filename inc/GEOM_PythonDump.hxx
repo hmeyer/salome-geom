@@ -46,6 +46,7 @@ namespace GEOM
 
 //    operator TCollection_AsciiString () const;
 
+    Standard_EXPORT TPythonDump& operator<< (bool theArg);
     Standard_EXPORT TPythonDump& operator<< (long int theArg);
     Standard_EXPORT TPythonDump& operator<< (int theArg);
     Standard_EXPORT TPythonDump& operator<< (double theArg);

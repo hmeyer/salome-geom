@@ -209,6 +209,10 @@ Standard_Integer GEOMImpl_RotateDriver::Execute(TFunction_Logbook& log) const
     gp_Trsf aTrsf1;
     gp_Trsf aTrsf2;
     gp_Trsf aTrsf3;
+
+    gp_XYZ aDir2 = RI.GetDir2(); // can be set by previous execution
+    if (aDir2.Modulus() < gp::Resolution()) {
+      // Calculate direction as vector from the axis to the shape's center
     gp_Pnt P1;
     GProp_GProps System;
 
@@ -234,7 +238,14 @@ Standard_Integer GEOMImpl_RotateDriver::Execute(TFunction_Logbook& log) const
 
     if ( P1.IsEqual(P2, Precision::Confusion() ) ) return 0;
 
-    gp_Vec Vec (P1.X()-P2.X(), P1.Y()-P2.Y(), P1.Z()-P2.Z());
+    aDir2 = gp_XYZ(P1.X()-P2.X(), P1.Y()-P2.Y(), P1.Z()-P2.Z());
+
+    // Attention: this abnormal action is done for good working of
+    // TransformLikeOther(), used by RestoreSubShapes functionality
+    RI.SetDir2(aDir2);
+    }
+
+    gp_Vec Vec (aDir2);
     Vec.Normalize();
 
     gp_Vec elevVec(D);

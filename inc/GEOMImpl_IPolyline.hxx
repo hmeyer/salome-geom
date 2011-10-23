@@ -21,10 +21,14 @@
 
 
 #include "GEOM_Function.hxx"
+#include <TColStd_HArray1OfReal.hxx>
 
 #define POLY_ARG_LENG       1
-#define POLY_ARG_IS_CLOSED  2
+#define POLY_ARG_CLOS       2
 #define POLY_ARG_LAST       3
+
+#define POLY_CONSTRUCTOR    4
+#define POLY_ARG_ARRAY      5
 
 class GEOMImpl_IPolyline
 {
@@ -34,15 +38,26 @@ class GEOMImpl_IPolyline
 
   void SetLength(int theLen) { _func->SetInteger(POLY_ARG_LENG, theLen); }
 
-  void SetIsClosed (int isClosed) { _func->SetInteger(POLY_ARG_IS_CLOSED, isClosed); }
-
   void SetPoint(int theId, Handle(GEOM_Function) theP) { _func->SetReference(POLY_ARG_LAST + theId, theP); }
+
+  void SetIsClosed(bool theIsClosed) { _func->SetInteger(POLY_ARG_CLOS, (int)theIsClosed); }
 
   int GetLength() { return _func->GetInteger(POLY_ARG_LENG); }
 
-  int GetIsClosed() { return _func->GetInteger(POLY_ARG_IS_CLOSED); }
-
   Handle(GEOM_Function) GetPoint(int theId) { return _func->GetReference(POLY_ARG_LAST + theId); }
+ 
+  bool GetIsClosed() { return (bool)_func->GetInteger(POLY_ARG_CLOS); }
+  void SetConstructorType(int theConstructor) {_func->SetInteger(POLY_CONSTRUCTOR,theConstructor); }
+
+  int GetConstructorType() { return _func->GetInteger(POLY_CONSTRUCTOR); }
+
+  void SetCoordinates(const Handle(TColStd_HArray1OfReal)& theValue)
+              { _func->SetRealArray(POLY_ARG_ARRAY, theValue); }
+
+
+  Handle(TColStd_HArray1OfReal) GetCoordinates() { return _func->GetRealArray(POLY_ARG_ARRAY); }
+
+  
 
  private:
 

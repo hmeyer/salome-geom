@@ -26,6 +26,7 @@
 #include <GEOMImpl_Types.hxx>
 #include <GEOMImpl_MeasureDriver.hxx>
 #include <GEOMImpl_IMeasure.hxx>
+#include <GEOMImpl_IShapesOperations.hxx>
 
 #include <GEOMAlgo_ShapeInfo.hxx>
 #include <GEOMAlgo_ShapeInfoFiller.hxx>
@@ -43,12 +44,12 @@
 #include <BRepAdaptor_Surface.hxx>
 #include <BRepBndLib.hxx>
 #include <BRepCheck.hxx>
-#include <BRepCheck_Result.hxx>
 #include <BRepCheck_ListIteratorOfListOfStatus.hxx>
+#include <BRepCheck_Result.hxx>
+#include <BRepCheck_Shell.hxx>
 #include <BRepExtrema_DistShapeShape.hxx>
 #include <BRepGProp.hxx>
 #include <BRepTools.hxx>
-#include <BRepClass3d_SolidClassifier.hxx>
 
 #include <Bnd_Box.hxx>
 
@@ -56,6 +57,7 @@
 #include <GProp_PrincipalProps.hxx>
 
 #include <TopAbs.hxx>
+#include <TopExp.hxx>
 #include <TopoDS.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
@@ -83,25 +85,28 @@
 
 #include <Geom_Line.hxx>
 
-#include <GeomAPI_IntSS.hxx>
-#include <Geom_SphericalSurface.hxx>
-#include <Geom_ToroidalSurface.hxx>
-#include <Geom_Circle.hxx>
-#include <BRep_Builder.hxx>
-#include <TopoDS_Compound.hxx>
-#include <ShapeFix_Shape.hxx>
 
 #include <gp_Pln.hxx>
 #include <gp_Lin.hxx>
 
 #include <GeomAPI_ProjectPointOnCurve.hxx>
-#include <ShapeAnalysis.hxx>
-#include <ShapeAnalysis_Surface.hxx>
 #include <GeomLProp_CLProps.hxx>
 #include <GeomLProp_SLProps.hxx>
+#include <ShapeAnalysis.hxx>
+#include <ShapeAnalysis_Surface.hxx>
 
 #include <Standard_Failure.hxx>
 #include <Standard_ErrorHandler.hxx> // CAREFUL ! position of this file is critic : see Lucien PIGNOLONI / OCC
+
+#include <BRepClass3d_SolidClassifier.hxx>
+#include <BRep_Builder.hxx>
+#include <GeomAPI_IntSS.hxx>
+#include <Geom_Circle.hxx>
+#include <Geom_SphericalSurface.hxx>
+#include <Geom_ToroidalSurface.hxx>
+#include <ShapeFix_Shape.hxx>
+#include <TopoDS_Compound.hxx>
+
 
 //=============================================================================
 /*!
@@ -773,14 +778,21 @@ gp_Ax3 GEOMImpl_IMeasureOperations::GetPosition (const TopoDS_Shape& theShape)
 
   // Origin
   gp_Pnt aPnt;
-  if (theShape.ShapeType() == TopAbs_VERTEX) {
+
+  TopAbs_ShapeEnum aShType = theShape.ShapeType();
+
+  if (aShType == TopAbs_VERTEX) {
     aPnt = BRep_Tool::Pnt(TopoDS::Vertex(theShape));
   }
   else {
+    if (aShType == TopAbs_COMPOUND) {
+      aShType = GEOMImpl_IShapesOperations::GetTypeOfSimplePart(theShape);
+    }
+
     GProp_GProps aSystem;
-    if (theShape.ShapeType() == TopAbs_EDGE || theShape.ShapeType() == TopAbs_WIRE)
+    if (aShType == TopAbs_EDGE || aShType == TopAbs_WIRE)
       BRepGProp::LinearProperties(theShape, aSystem);
-    else if (theShape.ShapeType() == TopAbs_FACE || theShape.ShapeType() == TopAbs_SHELL)
+    else if (aShType == TopAbs_FACE || aShType == TopAbs_SHELL)
       BRepGProp::SurfaceProperties(theShape, aSystem);
     else
       BRepGProp::VolumeProperties(theShape, aSystem);
@@ -1296,6 +1308,54 @@ bool GEOMImpl_IMeasureOperations::CheckShape (Handle(GEOM_Object)      theShape,
 
 //=============================================================================
 /*!
+ *  IsGoodForSolid
+ */
+//=============================================================================
+TCollection_AsciiString GEOMImpl_IMeasureOperations::IsGoodForSolid (Handle(GEOM_Object) theShape)
+{
+  SetErrorCode(GEOM_KO);
+
+  TCollection_AsciiString aRes = "";
+
+  if (theShape.IsNull()) {
+    aRes = "WRN_NULL_OBJECT_OR_SHAPE";
+  }
+  else {
+    Handle(GEOM_Function) aRefShape = theShape->GetLastFunction();
+    if (aRefShape.IsNull()) {
+      aRes = "WRN_NULL_OBJECT_OR_SHAPE";
+    }
+    else {
+      TopoDS_Shape aShape = aRefShape->GetValue();
+      if (aShape.IsNull()) {
+        aRes = "WRN_NULL_OBJECT_OR_SHAPE";
+      }
+      else {
+        if (aShape.ShapeType() == TopAbs_COMPOUND) {
+          TopoDS_Iterator It (aShape, Standard_True, Standard_True);
+          if (It.More()) aShape = It.Value();
+        }
+        if (aShape.ShapeType() == TopAbs_SHELL) {
+          BRepCheck_Shell chkShell (TopoDS::Shell(aShape));
+          if (chkShell.Closed() == BRepCheck_NotClosed) {
+            aRes = "WRN_SHAPE_UNCLOSED";
+          }
+        }
+        else {
+          aRes = "WRN_SHAPE_NOT_SHELL";
+        }
+      }
+    }
+  }
+
+  if (aRes.IsEmpty())
+    SetErrorCode(GEOM_OK);
+
+  return aRes;
+}
+
+//=============================================================================
+/*!
  *  WhatIs
  */
 //=============================================================================
@@ -1673,6 +1733,38 @@ static bool CheckSingularCase(const TopoDS_Shape& aSh1,
 }
 */
 
+
+//=============================================================================
+/*!
+ *  AreCoordsInside
+ */
+//=============================================================================
+std::vector<bool> GEOMImpl_IMeasureOperations::AreCoordsInside(Handle(GEOM_Object) theShape,
+                                                               const std::vector<double>& coords,
+                                                               double tolerance)
+{
+  std::vector<bool> res;
+  if (!theShape.IsNull()) {
+    Handle(GEOM_Function) aRefShape = theShape->GetLastFunction();
+    if (!aRefShape.IsNull()) {
+      TopoDS_Shape aShape = aRefShape->GetValue();
+      if (!aShape.IsNull()) {
+        BRepClass3d_SolidClassifier SC(aShape);
+        unsigned int nb_points = coords.size()/3;
+        for (int i = 0; i < nb_points; i++) {
+          double x = coords[3*i];
+          double y = coords[3*i+1];
+          double z = coords[3*i+2];
+          gp_Pnt aPnt(x, y, z);
+          SC.Perform(aPnt, tolerance);
+          res.push_back( ( SC.State() == TopAbs_IN ) || ( SC.State() == TopAbs_ON ) );
+        }
+      }
+    }
+  }
+  return res;
+}
+
 //=============================================================================
 /*!
  *  GetMinDistance
@@ -1871,6 +1963,72 @@ Standard_Real GEOMImpl_IMeasureOperations::GetAngle (Handle(GEOM_Object) theLine
     anAngle = aLin1.Angle(aLin2);
     anAngle /= PI180; // convert radians into degrees
 
+    if (anAngle > 90.0) {
+      anAngle = 180.0 - anAngle;
+    }
+
+    SetErrorCode(GEOM_OK);
+  }
+  catch (Standard_Failure)
+  {
+    Handle(Standard_Failure) aFail = Standard_Failure::Caught();
+    SetErrorCode(aFail->GetMessageString());
+  }
+
+  return anAngle;
+}
+
+//=======================================================================
+/*!
+ *  Compute angle (in degrees) between two vectors
+ */
+//=======================================================================
+Standard_Real GEOMImpl_IMeasureOperations::GetAngleBtwVectors (Handle(GEOM_Object) theVec1,
+                                                               Handle(GEOM_Object) theVec2)
+{
+  SetErrorCode(GEOM_KO);
+
+  Standard_Real anAngle = -1.0;
+
+  if (theVec1.IsNull() || theVec2.IsNull())
+    return anAngle;
+
+  Handle(GEOM_Function) aRefVec1 = theVec1->GetLastFunction();
+  Handle(GEOM_Function) aRefVec2 = theVec2->GetLastFunction();
+  if (aRefVec1.IsNull() || aRefVec2.IsNull())
+    return anAngle;
+
+  TopoDS_Shape aVec1 = aRefVec1->GetValue();
+  TopoDS_Shape aVec2 = aRefVec2->GetValue();
+  if (aVec1.IsNull() || aVec2.IsNull() ||
+      aVec1.ShapeType() != TopAbs_EDGE ||
+      aVec2.ShapeType() != TopAbs_EDGE)
+  {
+    SetErrorCode("Two edges must be given");
+    return anAngle;
+  }
+
+  try {
+#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+    OCC_CATCH_SIGNALS;
+#endif
+    TopoDS_Edge aE1 = TopoDS::Edge(aVec1);
+    TopoDS_Edge aE2 = TopoDS::Edge(aVec2);
+
+    TopoDS_Vertex aP11, aP12, aP21, aP22;
+    TopExp::Vertices(aE1, aP11, aP12, Standard_True);
+    TopExp::Vertices(aE2, aP21, aP22, Standard_True);
+    if (aP11.IsNull() || aP12.IsNull() || aP21.IsNull() || aP22.IsNull()) {
+      SetErrorCode("Bad edge given");
+      return anAngle;
+    }
+
+    gp_Vec aV1 (BRep_Tool::Pnt(aP11), BRep_Tool::Pnt(aP12));
+    gp_Vec aV2 (BRep_Tool::Pnt(aP21), BRep_Tool::Pnt(aP22)) ;
+
+    anAngle = aV1.Angle(aV2);
+    anAngle /= PI180; // convert radians into degrees
+
     SetErrorCode(GEOM_OK);
   }
   catch (Standard_Failure)
@@ -1968,10 +2126,10 @@ Standard_Real GEOMImpl_IMeasureOperations::CurveCurvatureByPoint
 #if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
     OCC_CATCH_SIGNALS;
 #endif
-    GeomAPI_ProjectPointOnCurve PPC(aPoint, aCurve, aFP, aLP);
-    if(PPC.NbPoints()>0) {
+    GeomAPI_ProjectPointOnCurve PPCurve(aPoint, aCurve, aFP, aLP);
+    if(PPCurve.NbPoints()>0) {
       GeomLProp_CLProps Prop = GeomLProp_CLProps 
-        (aCurve, PPC.LowerDistanceParameter(), 2, Precision::Confusion());
+        (aCurve, PPCurve.LowerDistanceParameter(), 2, Precision::Confusion());
       aRes = fabs(Prop.Curvature());
       SetErrorCode(GEOM_OK);
     }

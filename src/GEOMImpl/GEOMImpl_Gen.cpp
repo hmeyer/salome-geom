@@ -62,6 +62,7 @@
 #include <GEOMImpl_TranslateDriver.hxx>
 #include <GEOMImpl_RotateDriver.hxx>
 #include <GEOMImpl_MirrorDriver.hxx>
+#include <GEOMImpl_ProjectionDriver.hxx>
 #include <GEOMImpl_OffsetDriver.hxx>
 #include <GEOMImpl_ScaleDriver.hxx>
 #include <GEOMImpl_PositionDriver.hxx>
@@ -150,6 +151,7 @@ GEOMImpl_Gen::GEOMImpl_Gen()
    TFunction_DriverTable::Get()->AddDriver(GEOMImpl_TranslateDriver::GetID(), new GEOMImpl_TranslateDriver());
    TFunction_DriverTable::Get()->AddDriver(GEOMImpl_RotateDriver::GetID(), new GEOMImpl_RotateDriver());
    TFunction_DriverTable::Get()->AddDriver(GEOMImpl_MirrorDriver::GetID(), new GEOMImpl_MirrorDriver());
+   TFunction_DriverTable::Get()->AddDriver(GEOMImpl_ProjectionDriver::GetID(), new GEOMImpl_ProjectionDriver());
    TFunction_DriverTable::Get()->AddDriver(GEOMImpl_OffsetDriver::GetID(), new GEOMImpl_OffsetDriver());
    TFunction_DriverTable::Get()->AddDriver(GEOMImpl_ScaleDriver::GetID(), new GEOMImpl_ScaleDriver());
    TFunction_DriverTable::Get()->AddDriver(GEOMImpl_PositionDriver::GetID(), new GEOMImpl_PositionDriver());

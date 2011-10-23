@@ -89,9 +89,8 @@ Standard_Integer GEOM_SubShapeDriver::Execute(TFunction_Logbook& log) const
   if (anIndices->Length() == 1 && anIndices->Value(1) == -1) { //The empty subshape
     B.MakeCompound(aCompound);
     aShape = aCompound;
-
-  } else {
-
+  }
+  else {
     TopTools_IndexedMapOfShape aMapOfShapes;
     TopExp::MapShapes(aMainShape, aMapOfShapes);
 
@@ -108,12 +107,12 @@ Standard_Integer GEOM_SubShapeDriver::Execute(TFunction_Logbook& log) const
       }
 
       aShape = aCompound;
-
-    } else {
-
-      if (aMapOfShapes.Extent() < anIndices->Value(1))
+    }
+    else {
+      int i = anIndices->Lower();
+      if (aMapOfShapes.Extent() < anIndices->Value(i))
         Standard_NullObject::Raise("GEOM_SubShapeDriver::Execute: Index is out of range");
-      aShape = aMapOfShapes.FindKey(anIndices->Value(1));
+      aShape = aMapOfShapes.FindKey(anIndices->Value(i));
     }
   }
 

@@ -116,6 +116,10 @@ class Handle(GEOMImpl_PrismDriver) : public Handle(TFunction_Driver) {
 #include <Standard_CString.hxx>
 #endif
 
+#include <TopoDS_Shape.hxx>
+#include <gp_Vec.hxx>
+#include <Standard_Real.hxx>
+
 class TColStd_SequenceOfExtendedString;
 
 
@@ -137,17 +141,24 @@ public:
       }
 
  // Methods PUBLIC
- // 
+
 Standard_EXPORT GEOMImpl_PrismDriver();
+  Standard_EXPORT ~GEOMImpl_PrismDriver() {};
+
 Standard_EXPORT virtual  Standard_Integer Execute(TFunction_Logbook& log) const; 
 Standard_EXPORT virtual void Validate(TFunction_Logbook&) const {}
 Standard_EXPORT Standard_Boolean MustExecute(const TFunction_Logbook&) const { return Standard_True; }
 Standard_EXPORT static const Standard_GUID& GetID();
-Standard_EXPORT ~GEOMImpl_PrismDriver() {};
+
+  Standard_EXPORT static TopoDS_Shape MakeScaledPrism (const TopoDS_Shape& theShapeBase,
+                                                       const gp_Vec&       theVector,
+                                                       const Standard_Real theScaleFactor,
+                                                       const gp_Pnt&       theCDG = gp::Origin(),
+                                                       bool                isCDG = false); 
 
 
  // Type management
- //
+
 Standard_EXPORT friend Handle_Standard_Type& GEOMImpl_PrismDriver_Type_();
 Standard_EXPORT const Handle(Standard_Type)& DynamicType() const  { return STANDARD_TYPE(GEOMImpl_PrismDriver) ; }
 Standard_EXPORT Standard_Boolean IsKind(const Handle(Standard_Type)& AType) const { return (STANDARD_TYPE(GEOMImpl_PrismDriver) == AType || TFunction_Driver::IsKind(AType)); } 

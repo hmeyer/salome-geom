@@ -83,8 +83,11 @@ SALOME_WNT_EXPORT
     TopoDS_Shape aResShape;
     //VRV: OCC 4.0 migration
     STEPControl_Reader aReader;
-
+    //VSR: 16/09/09: Convert to METERS
     Interface_Static::SetCVal("xstep.cascade.unit","M");
+    Interface_Static::SetIVal("read.step.ideas", 1);
+    Interface_Static::SetIVal("read.step.nonmanifold", 1);
+
     //VRV: OCC 4.0 migration
     TopoDS_Compound compound;
     BRep_Builder B;
@@ -114,6 +117,21 @@ SALOME_WNT_EXPORT
 	  /* For a single entity */
 	  else if (nbr == 1 && nbs == 1) {
 	    aResShape = aReader.Shape(1);
+        // ATTENTION: this is a workaround for mantis issue 0020442 remark 0010776
+        // It should be removed after patching OCCT for bug OCC22436
+        // (fix for OCCT is expected in service pack next to OCCT6.3sp12)
+        if (aResShape.ShapeType() == TopAbs_COMPOUND) {
+          int nbSub1 = 0;
+          TopoDS_Shape currShape;
+          TopoDS_Iterator It (aResShape, Standard_True, Standard_True);
+          for (; It.More(); It.Next()) {
+            nbSub1++;
+            currShape = It.Value();
+          }
+          if (nbSub1 == 1)
+            aResShape = currShape;
+        }
+        // END workaround
 	    break;
 	  }
 

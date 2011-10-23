@@ -136,6 +136,16 @@ class GEOM_Object : public MMgt_TShared
  friend class GEOM_Engine;
 
  public:
+  struct Color {
+    //! Red component of the color
+    double R;
+    //! Green component of the color
+    double G;
+    //! Blue component  of the color
+    double B;
+  };
+
+ public:
   inline void* operator new(size_t,void* anAddress)
     {
       return anAddress;
@@ -213,10 +223,10 @@ class GEOM_Object : public MMgt_TShared
   Standard_EXPORT const char* GetName();
 
   //!Sets a color of this GEOM_Object
-  Standard_EXPORT void SetColor(const Quantity_Color &theColor);
+  Standard_EXPORT void SetColor(const GEOM_Object::Color& theColor);
 
   //!Returns a color of this GEOM_Object
-  Standard_EXPORT Quantity_Color GetColor();
+  Standard_EXPORT Color GetColor();
 
   //!Toggles an auto color mode on this GEOM_Object
   Standard_EXPORT void SetAutoColor(bool theAutoColor);

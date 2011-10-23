@@ -91,10 +91,10 @@ NMTDS_PassKeyBoolean myKey;
 #define TheKey_hxx <NMTDS_PassKeyBoolean.hxx>
 #define Hasher NMTDS_PassKeyMapHasher
 #define Hasher_hxx <NMTDS_PassKeyMapHasher.hxx>
-#define TCollection_StdMapNode NMTDS_StdMapNodeOfMapOfPassKeyBoolean
-#define TCollection_StdMapNode_hxx <NMTDS_StdMapNodeOfMapOfPassKeyBoolean.hxx>
 #define TCollection_MapIterator NMTDS_MapIteratorOfMapOfPassKeyBoolean
 #define TCollection_MapIterator_hxx <NMTDS_MapIteratorOfMapOfPassKeyBoolean.hxx>
+#define TCollection_StdMapNode NMTDS_StdMapNodeOfMapOfPassKeyBoolean
+#define TCollection_StdMapNode_hxx <NMTDS_StdMapNodeOfMapOfPassKeyBoolean.hxx>
 #define Handle_TCollection_StdMapNode Handle_NMTDS_StdMapNodeOfMapOfPassKeyBoolean
 #define TCollection_StdMapNode_Type_() NMTDS_StdMapNodeOfMapOfPassKeyBoolean_Type_()
 #define TCollection_Map NMTDS_MapOfPassKeyBoolean
@@ -106,10 +106,10 @@ NMTDS_PassKeyBoolean myKey;
 #undef TheKey_hxx
 #undef Hasher
 #undef Hasher_hxx
-#undef TCollection_StdMapNode
-#undef TCollection_StdMapNode_hxx
 #undef TCollection_MapIterator
 #undef TCollection_MapIterator_hxx
+#undef TCollection_StdMapNode
+#undef TCollection_StdMapNode_hxx
 #undef Handle_TCollection_StdMapNode
 #undef TCollection_StdMapNode_Type_
 #undef TCollection_Map

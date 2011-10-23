@@ -116,6 +116,14 @@ Standard_Integer GEOMImpl_BooleanDriver::Execute(TFunction_Logbook& log) const
   TopoDS_Shape aShape2 = aRefShape2->GetValue();
   if (!aShape1.IsNull() && !aShape2.IsNull()) {
 
+    // check arguments for Mantis issue 0021019
+    BRepCheck_Analyzer ana (aShape1, Standard_True);
+    if (!ana.IsValid())
+      StdFail_NotDone::Raise("Common operation will not be performed, because argument shape is not valid");
+    ana.Init(aShape2);
+    if (!ana.IsValid())
+      StdFail_NotDone::Raise("Common operation will not be performed, because argument shape is not valid");
+
     // perform COMMON operation
     if (aType == BOOLEAN_COMMON) {
       BRep_Builder B;

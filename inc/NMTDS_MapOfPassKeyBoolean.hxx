@@ -37,8 +37,8 @@
 class Standard_DomainError;
 class NMTDS_PassKeyBoolean;
 class NMTDS_PassKeyMapHasher;
-class NMTDS_StdMapNodeOfMapOfPassKeyBoolean;
 class NMTDS_MapIteratorOfMapOfPassKeyBoolean;
+class NMTDS_StdMapNodeOfMapOfPassKeyBoolean;
 
 
 #ifndef _Standard_HeaderFile
