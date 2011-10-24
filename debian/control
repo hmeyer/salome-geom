@@ -1,7 +1,7 @@
 Source: libsalome-geom
 Priority: extra
 Maintainer: Henning Meyer <hmeyer@gmx.eu>
-Build-Depends: cdbs, debhelper (>= 7), cmake, liboce-dev
+Build-Depends: cdbs, debhelper (>= 7), cmake, liboce-dev, libxmu-dev
 Standards-Version: 3.9.1
 Section: libs
 Homepage: http://sourceforge.net/projects/salomegeometry/
@@ -9,7 +9,7 @@ Homepage: http://sourceforge.net/projects/salomegeometry/
 Package: libsalome-geom
 Section: libs
 Architecture: any
-Depends: ${misc:Depends}, liboce
+Depends: ${misc:Depends}, liboce, libxmu6
 Recommends: python-occ
 Description: A complete OpenCascade - OCAF based CAD framework. Note that this is not the original SALOME GEOM project but an effort to create a standalone framework based on the existing one from SALOME project, with the addition of extra functionality.
 
