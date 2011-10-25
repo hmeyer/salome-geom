@@ -174,13 +174,13 @@ ENDIF(MINGW)
 ###########
 
 IF(UNIX)
-    # Libraries are installed by default in /usr/local/lib/
+    # Libraries are installed by default in /usr/lib/
     INSTALL(TARGETS Archimede  ExchangeBREP ExchangeCSFDB ExchangeIGES ExchangeSTEP ExchangeSTL
                 ExchangeVRML ExchangeOBJ Exchange3DS GEOMAlgo GEOMImpl GEOM NMTDS NMTTools Partition ShHealOper Sketcher
-                DESTINATION /usr/local/lib)
-    # Headers are installed by default in /usr/local/include/geom
+                DESTINATION /usr/lib)
+    # Headers are installed by default in /usr/include/geom
     INSTALL(DIRECTORY inc/
-            DESTINATION /usr/local/include/geom
+            DESTINATION /usr/include/geom
             FILES_MATCHING PATTERN "*.h*"
 			PATTERN "*.svn*" EXCLUDE
 			)

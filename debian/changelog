@@ -1,3 +1,9 @@
+libsalome-geom (6.3.1.8-0ubuntu4) oneiric; urgency=low
+
+  * CMakeLists.txt fix 
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Wed, 26 Oct 2011 01:51:24 +0200
+
 libsalome-geom (6.3.1.8-0ubuntu3) oneiric; urgency=low
 
   * added libsm dep 
