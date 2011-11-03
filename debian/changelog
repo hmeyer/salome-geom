@@ -1,3 +1,9 @@
+libsalome-geom (6.3.1.8-0ubuntu6) oneiric; urgency=low
+
+  * updated dep 
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Thu, 03 Nov 2011 08:12:58 +0100
+
 libsalome-geom (6.3.1.8-0ubuntu5) oneiric; urgency=low
 
   * updated liboce1 dep 
