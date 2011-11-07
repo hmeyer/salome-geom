@@ -1,3 +1,15 @@
+libsalome-geom (6.3.1.8-0ubuntu10) natty; urgency=low
+
+  * natty upload 
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Mon, 07 Nov 2011 23:39:39 +0100
+
+libsalome-geom (6.3.1.8-0ubuntu9) maverick; urgency=low
+
+  * maverick upload 
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Mon, 07 Nov 2011 23:38:59 +0100
+
 libsalome-geom (6.3.1.8-0ubuntu8) lucid; urgency=low
 
   * lucid upload 
