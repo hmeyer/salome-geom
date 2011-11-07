@@ -1,3 +1,9 @@
+libsalome-geom (6.3.1.8-0ubuntu8) lucid; urgency=low
+
+  * lucid upload 
+
+ -- Henning Meyer <hmeyer@gmx.eu>  Mon, 07 Nov 2011 10:43:29 +0100
+
 libsalome-geom (6.3.1.8-0ubuntu7) oneiric; urgency=low
 
   * fixed lib path 
